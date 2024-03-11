@@ -1,24 +1,17 @@
-import logo from './logo.svg';
-import './App.css';
+import React from "react";
+import LoginComponent from "./components/login/Login";
+import HomeComponent from "./components/home/Home";
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import './i18n'; // Asegúrate de que esta línea esté antes de renderizar cualquier componente
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Router>
+      <Routes>
+        <Route path="/" element={<LoginComponent/>} />
+        <Route path="/home" element={<HomeComponent/>} />
+      </Routes>
+    </Router>
   );
 }
 

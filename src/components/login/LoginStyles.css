@@ -1,0 +1,15 @@
+/* Estilos para el logo */
+.logo-image {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    width: 600px; 
+  }
+  
+  /* Estilos para los botones de idioma */
+  .language-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+  }
+  

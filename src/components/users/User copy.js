@@ -1,0 +1,88 @@
+import React, { useState,useRef,useEffect  } from 'react';
+import Accordion from '@mui/material/Accordion';
+import AccordionSummary from '@mui/material/AccordionSummary';
+import AccordionDetails from '@mui/material/AccordionDetails';
+import Typography from '@mui/material/Typography';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import CreateUserForm from './CreateUserForm';
+import UsersList from './UsersList';
+import BasicDataForm from './BasicDataForm';
+import { useTranslation } from 'react-i18next';
+
+function User() {
+  const { t } = useTranslation();
+  const [selectedUser, setSelectedUser] = useState(null);
+  const [isCreateAccordionOpen, setIsCreateAccordionOpen] = useState(false);
+  const [isFieldsEnabled, setIsFieldsEnabled] = useState(true);
+
+  const modifyUserRef = useRef(null);
+
+  const handleCreateUser = () => {
+    setSelectedUser(null);
+    setIsCreateAccordionOpen(true);
+  };
+
+  const handleEditUser = (user) => {
+    if (modifyUserRef.current) {
+      modifyUserRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    if (user.birth_date) {
+      const formattedBirthDate = new Date(user.birth_date).toISOString().slice(0, 10);
+      user.birth_date = formattedBirthDate;
+    }
+    setSelectedUser(user);
+    setIsCreateAccordionOpen(true);
+
+  };
+  const handleClearForm = () => {
+    setSelectedUser(null);
+    setIsCreateAccordionOpen(true); // Mantiene el acordeón abierto
+  };
+  
+  const scrollToModifyUser = () => {
+    setIsCreateAccordionOpen(true);
+    // Retrasa el desplazamiento para dar tiempo al contenido para que se renderice.
+      if (modifyUserRef.current) {
+        modifyUserRef.current.scrollIntoView({ behavior: 'smooth', block: 'start'  });
+      }
+  };
+
+  return (
+    <div>
+      <Accordion>
+        <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+          <Typography>{t('Consulta de Usuarios')}</Typography>
+        </AccordionSummary>
+        <AccordionDetails>
+          <UsersList onEditUser={handleEditUser} scrollToModifyUser={scrollToModifyUser}/>
+        </AccordionDetails>
+      </Accordion>
+      <Accordion expanded={isCreateAccordionOpen} onChange={() => setIsCreateAccordionOpen(!isCreateAccordionOpen)}>
+        <AccordionSummary expandIcon={<ExpandMoreIcon />} ref={modifyUserRef}>
+          <Typography>{!selectedUser ? t("Crear Usuario") : t("Modificar Usuario")}</Typography>
+        </AccordionSummary>
+        <AccordionDetails>
+          <div style={{ width: '100%' }}>
+            {selectedUser !== null ? (
+              <BasicDataForm
+                initialValues={selectedUser}
+                setSelectedUser={setSelectedUser}
+                isFieldsEnabled={isFieldsEnabled}
+                onClear={handleClearForm}
+              />
+            ) : (
+              <CreateUserForm
+                selectedUser={selectedUser}
+                onCreateUser={handleCreateUser}
+              />
+            )}
+          </div>
+        </AccordionDetails>
+      </Accordion>
+      
+    </div>
+  );
+}
+
+export default User;

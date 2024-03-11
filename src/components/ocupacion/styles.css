@@ -1,0 +1,48 @@
+/* OcupacionStyles.css */
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap; /* Asegura que se ajuste en pantallas pequeñas */
+  }
+  
+  .selectors {
+    display: flex;
+    gap: 10px; /* Espaciado entre los selectores */
+  }
+  .formControl {
+    margin: 10px;
+    min-width: 120px; /* O el ancho que prefieras */
+  }
+  
+.contenedor-principal {
+    margin: auto;
+    width: 90%;
+    display: flex;
+    flex-direction: column; /* Añade esta línea para organizar los hijos en columna */
+  }
+  
+  .contenedor-graficas {
+    display: flex;
+    justify-content: space-between;
+    width: 100%; /* Asegura que ocupe todo el ancho disponible */
+  }
+  
+  .contenedor-graficas-ocupacion {
+    display: flex;
+    flex-direction: row; /* Establece los elementos hijos en línea */
+    justify-content: space-around; /* Ajusta esto para el espaciado entre elementos */
+    align-items: center; /* Alinea los elementos verticalmente en el centro, si es necesario */
+    flex-wrap: wrap; /* Permite que los elementos se ajusten al tamaño del contenedor */
+  }
+  
+  .SalesChart, .GraficaOcupacion, .DataTable {
+    margin: 10px;
+  }
+  .last-updated {
+    margin-left: auto; /* Esto empuja el elemento al final de la caja si hay espacio */
+    padding-left: 16px; /* O el espacio que necesites */
+    color: #666; /* Un color más tenue si es solo informativo */
+    font-size: 0.9em; /* Un tamaño de fuente más pequeño si es solo informativo */
+  }
+  

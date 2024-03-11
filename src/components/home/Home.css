@@ -1,0 +1,28 @@
+/* Home.css */
+.home {
+    display: flex;
+    height: 100vh;
+    transition: transform 0.3s;
+}
+.toggle-button {
+    display: none;
+    padding: 10px;
+    background: white;
+    color: white;
+    border: none;
+    cursor: pointer;
+  }
+  .contentStyle {
+    background-color: blue;
+    color: white;
+  }
+  
+  .buttonStyle {
+    color: white !important;
+  }
+  
+  .menuStyle {
+    background-color: blue;
+    color: white !important;
+  }
+  
