@@ -4,64 +4,40 @@ import * as XLSX from 'xlsx';
 
   // Definir las columnas de tu tabla
   const headCells = [
-    { id: 'sku', numeric: false, label: 'SKU', isVisible: true  },
-    { id: 'sku_tipo', numeric: false, label: 'TIPO', isVisible: true },
-    { id: 'actual_factor_inventario', numeric: true, label: 'FACTOR' , isVisible: false },
-    { id: 'actual_inventario', numeric: true, label: 'INVENTARIO DISPONIBLE', isVisible: true  },
-    { id: 'actual_venta', numeric: true, label: 'VENTA ACTUAL' , isVisible: false },
-    { id: 'actual_area', numeric: true, label: 'AREA(M3)' , isVisible: false },
-    { id: 'devoluciones_factor_inventario', numeric: true, label: 'FACTOR DEVOLUCIONES', isVisible: false  },
-    { id: 'devoluciones_inventario', numeric: true, label: 'INVENTARIO DEVOLUCIONES' , isVisible: false },
-    { id: 'devoluciones_area', numeric: true, label: 'AREA DEVOLUCIONES(M3)' , isVisible: false },
-    { id: 'mensual_venta', numeric: true, label: 'VENTA MENSUAL' , isVisible: false },
-    { id: 'mensual_venta_devoluciones', numeric: true, label: 'VENTA MENSUAL DEVOLUCIONES' , isVisible: false },    
-    { id: 'stagging_factor_inventario', numeric: true, label: 'FACTOR INVENTARIO STAGGING' , isVisible: false },
-    { id: 'stagging_inventario', numeric: true, label: 'INVENTARIO STAGGING' , isVisible: false },
-    { id: 'stagging_area', numeric: true, label: 'AREA STAGGING(M3) ' , isVisible: false },
-    { id: 'pronostico_diario', numeric: true, label: 'PRONOSTICO HOY' , isVisible: false },
-    { id: 'pronostico_optimo', numeric: true, label: 'PRONOSTICO OPTIMO(15días)' , isVisible: true },
-    { id: 'area_pronostico_optimo', numeric: true, label: 'AREA PRONOSTICO OPTIMO(M3)' , isVisible: false },
-    { id: 'inventario_seguridad', numeric: true, label: 'INVENTARIO SEGURIDAD' , isVisible: false },
-    { id: 'punto_reorden', numeric: true, label: 'PUNTO REORDEN' , isVisible: true},
-    { id: 'cantidad_solicitar', numeric: true, label: 'CANTIDAD SOLICITAR', isVisible: true },
+    { id: 'ano_datos_historicos', numeric: false, label: 'Año', isVisible: true },
+    { id: 'sku_datos_historicos', numeric: false, label: 'SKU', isVisible: true },
+    { id: 'modelo_datos_historicos', numeric: false, label: 'Modelo', isVisible: true },
+    { id: 'tipo_enser_datos_historicos', numeric: false, label: 'Tipo de Enser', isVisible: true },
+    { id: 'clasificacion_enser_datos_historicos', numeric: false, label: 'Clasificación', isVisible: true },
+    { id: 'ventas_datos_historicos', numeric: true, label: 'Ventas', isVisible: true },
+    { id: 'fecha_datos_historicos', numeric: false, label: 'Fecha', isVisible: true },
+    { id: 'semana_datos_historicos', numeric: true, label: 'Semana', isVisible: true },
+    { id: 'tipo', numeric: false, label: 'Tipo', isVisible: true },
   ];
 
-  const exportToExcel = (apiData, fileName, visibleColumns) => {
-    // Primero, construye un mapa de visibilidad de columnas basado en headCells
-    const columnVisibility = headCells.reduce((acc, cell) => {
-      acc[cell.id] = cell.isVisible ?? false; // Usa el valor de isVisible o false si no está definido
-      return acc;
-    }, {});
 
-    // Luego, filtra y transforma los datos basándose en la visibilidad de las columnas
-    const filteredData = apiData.map(row => {
-      const filteredRow = {};
-      Object.keys(row).forEach(key => {
-        // Comprueba si la columna está marcada como visible antes de agregarla
-        if (columnVisibility[key]) {
-          filteredRow[key] = row[key];
-        }
-      });
-      return filteredRow;
-    });
-
-    // A partir de aquí, el proceso de creación y descarga de Excel sigue igual
-    const ws = XLSX.utils.json_to_sheet(filteredData);
+  const exportToExcel = (apiData, fileName) => {
+    const ws = XLSX.utils.json_to_sheet(apiData);
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, "Sheet1");
-
+  
+    // Buffer para permitir la descarga de archivos en navegadores modernos
+    XLSX.write(wb, {bookType: 'xlsx', type: 'buffer'});
+    
     // Crea un Blob con los datos en formato Excel
+    XLSX.write(wb, {bookType: 'xlsx', type: 'binary'});
+    
+    // Crea un objeto Blob
     let excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
     const data = new Blob([excelBuffer], {type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8'});
     
     // Crea y simula un click en un elemento <a> para descargar el archivo
     const link = document.createElement('a');
     link.href = URL.createObjectURL(data);
-    link.setAttribute('download', fileName + '.xlsx');
+    link.setAttribute('download', fileName + '.xlsx'); // Nombre del archivo Excel
     document.body.appendChild(link);
     link.click();
-}  
-
+  }
 
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -90,7 +66,7 @@ function stableSort(array, comparator) {
   return stabilizedThis.map((el) => el[0]);
 }
 
-function DataTable({ data }) {
+function DataTableHistorico({ data }) {
   const [order, setOrder] = useState('asc');
   const [orderBy, setOrderBy] = useState('sku');
   // Estado para las columnas visibles
@@ -120,7 +96,7 @@ function DataTable({ data }) {
           variant="contained"
           color="info"
           size="small" // Hace el botón más pequeño
-          onClick={() => exportToExcel(data, 'ocupación')}
+          onClick={() => exportToExcel(data, 'historico')}
         >
           Descarga Excel
         </Button>
@@ -166,11 +142,11 @@ function DataTable({ data }) {
                     backgroundColor: index % 2 ? 'action.hover' : 'background.paper',
                   }}
                 >
-                  {headCells.filter(cell => cell.isVisible).map((cell) => (
-                    <TableCell key={cell.id} align={cell.numeric ? 'right' : 'left'}>
-                      {row[cell.id]}
-                    </TableCell>
-                  ))}
+                {headCells.filter(cell => cell.isVisible).map((cell) => (
+                  <TableCell key={row.id + cell.id} align={cell.numeric ? 'right' : 'left'}>
+                    {row[cell.id]}
+                  </TableCell>
+                ))}
                 </TableRow>
               ))}
           </TableBody>
@@ -180,4 +156,4 @@ function DataTable({ data }) {
   );
 }
 
-export default DataTable;
+export default DataTableHistorico;

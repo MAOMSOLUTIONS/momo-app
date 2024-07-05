@@ -6,12 +6,12 @@ import './i18n'; // Asegúrate de que esta línea esté antes de renderizar cual
 
 function App() {
   return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<LoginComponent/>} />
-        <Route path="/home" element={<HomeComponent/>} />
-      </Routes>
-    </Router>
+      <Router>
+        <Routes>
+          <Route path="/" element={<LoginComponent/>} />
+          <Route path="/home" element={<HomeComponent/>} />
+        </Routes>
+      </Router>
   );
 }
 

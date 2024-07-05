@@ -19,18 +19,11 @@ const GraficaBarras = ({ data1, titulo, titulo2 }) => {
     return '#F44336'; // Rojo vibrante
   };
 
-  const CustomizedLabel = ({ x, y, width, value, isInsideBar }) => {
+  // Personalización de las etiquetas para garantizar contraste
+  const CustomizedLabel = ({ x, y, width, value }) => {
     return (
-      <text
-        x={x + width / 2}
-        y={isInsideBar ? y + 20 : y} // Si es dentro de la barra, ajustamos la posición y
-        dy={isInsideBar ? 0 : -6} // Ajustamos el desplazamiento solo para el porcentaje
-        fill={isInsideBar ? '#fff' : '#000'} // Si es dentro de la barra, el color de la fuente podría ser blanco para mejor visibilidad
-        fontWeight="bold"
-        fontSize="16"
-        textAnchor="middle"
-      >
-        {value}
+      <text x={x + width / 2} y={y} dy={-6} fill="#000" fontWeight="bold" fontSize="16" textAnchor="middle">
+        {`${value}%`}
       </text>
     );
   };
@@ -40,7 +33,7 @@ const GraficaBarras = ({ data1, titulo, titulo2 }) => {
   };
 
   return (
-    <Box onClick={() => handleClick(titulo)}>
+    <Box>
       {/* Título del gráfico */}
       <Typography variant="subtitle2" component="h3" align="center" gutterBottom>
         {titulo}
@@ -66,9 +59,7 @@ const GraficaBarras = ({ data1, titulo, titulo2 }) => {
               <Cell key={`cell-${index}`} fill={getBarColor(entry.real)} />
             ))
           }
-          <LabelList dataKey="real" content={props => <CustomizedLabel {...props} isInsideBar={false} />} />
-          <LabelList dataKey="name" content={props => <CustomizedLabel {...props} isInsideBar={true} value="Real" />} />
-
+          <LabelList dataKey="real"  content={<CustomizedLabel />} />
         </Bar>
         <Bar dataKey="proyectado" name="Proyectado" fill="#82ca9d">
           {
@@ -76,8 +67,7 @@ const GraficaBarras = ({ data1, titulo, titulo2 }) => {
               <Cell key={`cell-${index}`} fill={getBarColor(entry.proyectado)} />
             ))
           }
-          <LabelList dataKey="proyectado" content={props => <CustomizedLabel {...props} isInsideBar={false} />} />
-          <LabelList dataKey="name" content={props => <CustomizedLabel {...props} isInsideBar={true} value="Proyectado" />} />
+          <LabelList dataKey="proyectado" content={<CustomizedLabel />} />
         </Bar>
       </BarChart>
 

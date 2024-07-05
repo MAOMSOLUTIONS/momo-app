@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import DataTable from './DataTable'; // Asegúrate de que el archivo se llama DataTable.js
+import DataTable from './DataTableHistorico'; // Asegúrate de que el archivo se llama DataTable.js
 import SalesChart from './SalesChart'; // Asegúrate de que el archivo se llama SalesChart.js
 import GraficaBarras from './GraficaBarras';
 import './styles.css'; 
@@ -88,10 +88,10 @@ const Ocupacion = () => {
         <Box className="separator"></Box>
       </div>
       <Box className="contenedor-graficas-ocupacion">
-        <GraficaBarras data1={graficasData.Devoluciones} titulo="DEVOLUCIONES (Proyectado 1 mes)" titulo2="Capacidad 240 Pallets" barColor1="rgba(0, 128, 0, 0.5)" barColor2="rgba(255, 0, 0, 0.5)" />
-        <GraficaBarras data1={graficasData.Rumba} titulo="RUMBA (Proyectado 15 días" titulo2="Capacidad 1722 m2" barColor1="rgba(0, 128, 0, 0.5)" barColor2="rgba(255, 0, 0, 0.5)" />
-        <GraficaBarras data1={graficasData.Rack}  titulo="RACK (Proyectado 15 días)" titulo2="Capacidad 600 pallets" barColor1="rgba(0, 128, 0, 0.5)" barColor2="rgba(255, 0, 0, 0.5)" />
-        <GraficaBarras data1={graficasData.Stagging} titulo="STAGGING (Hoy)" titulo2="Capacidad 1500 m2" barColor1="rgba(0, 128, 0, 0.5)" barColor2="rgba(255, 0, 0, 0.5)" />
+        <GraficaBarras data1={graficasData.Devoluciones} barColor1="rgba(0, 128, 0, 0.5)" barColor2="rgba(255, 0, 0, 0.5)" />
+        <GraficaBarras data1={graficasData.Rumba} barColor1="rgba(0, 128, 0, 0.5)" barColor2="rgba(255, 0, 0, 0.5)" />
+        <GraficaBarras data1={graficasData.Rack} barColor1="rgba(0, 128, 0, 0.5)" barColor2="rgba(255, 0, 0, 0.5)" />
+        <GraficaBarras data1={graficasData.Stagging} barColor1="rgba(0, 128, 0, 0.5)" barColor2="rgba(255, 0, 0, 0.5)" />
       </Box>
       <Box >
         <DataTable data={datosTabla} />

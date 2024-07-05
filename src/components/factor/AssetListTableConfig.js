@@ -13,8 +13,7 @@ export const userColumns = (handleEditUser) => [
           headerName: 'Acciones',
           width: 150,
           visible: true,
-          renderCell: (params) => (
-            
+          renderCell: (params) => (            
             <Button
               variant="text"
               color="primary"

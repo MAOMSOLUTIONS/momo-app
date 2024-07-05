@@ -16,8 +16,8 @@
     { id: 'enterprise_fiscal_postal_code', label: 'CP Físcal', sm: 6, required: false, section: 'fiscal' },
     { id: 'id_enterprise_status', label: 'Estatus', sm: 6, type: 'select', required: false, 
     options: [
-      { id: 'activo', value: 'Activo' },
-      { id: 'inactivo', value: 'Inactivo' }
+      { id: '1', value: 'Activo' },
+      { id: '2', value: 'Inactivo' }
     ], section: 'basic'  },
     { id: 'enterpise_fiscal_email', label: 'Email Físcal', sm: 6, required: false, section: 'fiscal' },
     { id: 'enterprise_fiscal_phone', label: 'Teléfono Físcal', sm: 6, required: false, section: 'fiscal' }

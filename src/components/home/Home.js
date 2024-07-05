@@ -20,10 +20,14 @@ import Customer from '../customer/Customer';
 import Reservation from '../reservation/Reservation';
 import Ocupacion from '../ocupacion/Ocupacion';
 import Factor from '../factor/Factor';
+import Historico from '../historico/Historico';
 
 
 import Forecast from '../forecast/Forecast';
 import MyForm from '../dinamico/MyForm';
+
+import Factores from '../factores/Factores';
+
 
 import './Home.css';
 import { useLocation } from "react-router-dom";
@@ -51,6 +55,28 @@ const Sidebar = ({ open, handleDrawerClose, handleMenuItemClick, changeLanguage 
   return (
     <Drawer variant="persistent" anchor="left" open={open}>
       <List>
+      <ListItem button onClick={() => handleSubMenuClick('Ocupación')} className="drawerStyle">
+        <ListItemText primary={t('Ocupación')} />
+      </ListItem>
+      {openSubMenu === 'Ocupación' && (
+        <List>
+          <ListItem button onClick={() => handleMenuItemSelect('Ocupación')}>
+            <ListItemText primary={t('- Dashboard')} className="listItemStyle" />
+          </ListItem>
+          <ListItem button onClick={() => handleMenuItemSelect('Factores')}>
+            <ListItemText primary={t('- Factores')} className="listItemStyle" />
+          </ListItem>
+          <ListItem button onClick={() => handleMenuItemSelect('Forecast')}>
+            <ListItemText primary={t('- Forecast')} className="listItemStyle" />
+          </ListItem>
+
+          <ListItem button onClick={() => handleMenuItemSelect('Historico')}>
+            <ListItemText primary={t('- Historico')} className="listItemStyle" />
+          </ListItem>
+        </List>
+      )}
+
+
       <ListItem button onClick={() => handleSubMenuClick('Herramientas')} className="drawerStyle">
         <ListItemText primary={t('Herramientas')} />
       </ListItem>
@@ -58,12 +84,6 @@ const Sidebar = ({ open, handleDrawerClose, handleMenuItemClick, changeLanguage 
         <List>
           <ListItem button onClick={() => handleMenuItemSelect('Cubicuadraje')}>
             <ListItemText primary={t('- Cubicuadraje')} className="listItemStyle" />
-          </ListItem>
-          <ListItem button onClick={() => handleMenuItemSelect('Ocupación')}>
-            <ListItemText primary={t('- Ocupación')} className="listItemStyle" />
-          </ListItem>
-          <ListItem button onClick={() => handleMenuItemSelect('Factor')}>
-            <ListItemText primary={t('- Factor')} className="listItemStyle" />
           </ListItem>
         </List>
       )}
@@ -77,7 +97,37 @@ const Sidebar = ({ open, handleDrawerClose, handleMenuItemClick, changeLanguage 
           </ListItem>
         </List>
       )}
+      <ListItem button onClick={() => handleSubMenuClick('MiniBodegas')} className="drawerStyle">
+        <ListItemText primary={t('MiniBodegas')} />
+      </ListItem>
+      {openSubMenu === 'MiniBodegas' && (
+        <List>
+          <ListItem button onClick={() => handleMenuItemSelect('Empresas')}>
+            <ListItemText primary={t('- Empresas')} className="listItemStyle" />
+          </ListItem>
+          <ListItem button onClick={() => handleMenuItemSelect('Usuarios')}>
+            <ListItemText primary={t('- Usuarios')} className="listItemStyle" />
+          </ListItem>
+          <ListItem button onClick={() => handleMenuItemSelect('Propiedad')}>
+            <ListItemText primary={t('- Propiedad')} className="listItemStyle" />
+          </ListItem>
+          <ListItem button onClick={() => handleMenuItemSelect('Asset')}>
+            <ListItemText primary={t('- Asset')} className="listItemStyle" />
+          </ListItem>
+          <ListItem button onClick={() => handleMenuItemSelect('Customer')}>
+            <ListItemText primary={t('- Clientes')} className="listItemStyle" />
+          </ListItem>
+          <ListItem button onClick={() => handleMenuItemSelect('Reservation')}>
+            <ListItemText primary={t('- Reservación')} className="listItemStyle" />
+          </ListItem>
+          <ListItem button onClick={() => handleMenuItemSelect('Facturación')}>
+            <ListItemText primary={t('- Facturación')} className="listItemStyle" />
+          </ListItem>
+
+        </List>
+      )}
       </List>
+
     </Drawer>
   );
 };
@@ -215,13 +265,24 @@ const Content = ({ selectedMenuItem, handleDrawerClose, changeLanguage }) => {
         return (
           <Ocupacion />
         );
-    case 'Factor':
+    case 'Factores':
+          return (
+            <Factores />
+        );
+  
+        
+
+    case 'Historico':
+          return (
+            <Historico />
+          );
+      case 'Factor':
           return (
             <Factor />
           );    
     case 'Forecast':
         return (
-          <ForecastComponent/>
+          <Forecast/>
         );
   
     case 'Usuarios':
@@ -294,7 +355,9 @@ const App = () => {
   };
 
   return (
-    <div>
+    <div
+    
+    >
       <AppBar position="static">
         <Toolbar className="menuStyle">
           <IconButton color="white" aria-label="open drawer" onClick={handleDrawerOpen} edge="start">
@@ -310,6 +373,7 @@ const App = () => {
         open={open}
         handleDrawerClose={handleDrawerClose}
         handleMenuItemClick={handleMenuItemClick}
+
       />
       <Content selectedMenuItem={selectedMenuItem} handleDrawerClose={handleDrawerClose} changeLanguage={changeLanguage} />
     </div>

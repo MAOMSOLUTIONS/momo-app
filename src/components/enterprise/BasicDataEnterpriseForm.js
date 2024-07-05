@@ -83,7 +83,6 @@ const BasicDataEnterpriseForm = ({ onUserUpdated,initialValues, setSelectedUser,
         newErrors[field.id] = 'Campo obligatorio';
       }
     });
-    console.log("aqui esta la información")
 
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
@@ -93,13 +92,15 @@ const BasicDataEnterpriseForm = ({ onUserUpdated,initialValues, setSelectedUser,
       return;
     }
     try {
+      console.log("aqui esta la información 2")
       const dataToSend = {
         id_enterprise: formValues.id_enterprise,
         enterprise_name: formValues.enterprise_name,
         rfc: formValues.rfc,
-        id_status: formValues.id_enterprise_status ? formValues.id_enterprise_status.id : null, // Accede al id del objeto option seleccionado si existe
-        status: formValues.id_enterprise_status ? formValues.id_enterprise_status.value : null // Accede al value del objeto option seleccionado si existe
+        id_status: formValues.id_enterprise_status ? formValues.id_enterprise_status.id : null,
+        status: formValues.id_enterprise_status ? formValues.id_enterprise_status.value : null,
       };
+      console.log("aqui")
       const response = await axios[method](url, dataToSend);
       if (response.status === 201 || response.status === 200) { // Asumiendo que 201 es para creación y 200 para actualización
           const action = isCreating ? 'creado' : 'actualizado';
@@ -124,13 +125,13 @@ const BasicDataEnterpriseForm = ({ onUserUpdated,initialValues, setSelectedUser,
       }
     } catch (error) {
       console.error('Hubo un error al enviar el formulario:', error);
-      const defaultErrorMessage = isCreating ? 'Error al crear el usuario' : 'Error al actualizar el usuario';      
+      const defaultErrorMessage = isCreating ? 'Error al crear la empresa' : 'Error al actualizar el usuario';      
       if (error.response && error.response.data && error.response.data.message) {
         // Utiliza el mensaje de error de la API
-        setSnackbarMessage(`Error al crear el usuario: ${error.response.data.message}`);
+        setSnackbarMessage(`Error al crear la empresa: ${error.response.data.message}`);
       } else {
         // Si no hay un mensaje de error específico, usa un mensaje genérico
-        setSnackbarMessage('Error al crear el usuario');
+        setSnackbarMessage('Error al crear la empresa');
       }
       setSnackbarSeverity('error');
       setOpenSnackbar(true);
