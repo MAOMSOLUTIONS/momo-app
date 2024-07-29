@@ -1,27 +1,27 @@
 export const searchFields = [
   {
-    name: 'idEnterprise',
+    name: 'id_enterprise',
     label: 'Id',
     type: 'text',
     size: 'small',
     variant:"standard",
   },
   {
-    name: 'EnterpriseName',
+    name: 'enterprise_name',
     label: 'Nombre Empresa',
     type: 'text',
     size: 'small',
     variant:"standard",
   },
   {
-    name: 'rfc',
+    name: 'enterprise_rfc',
     label: 'RFC',
     type: 'text',
     size: 'small',
     variant:"standard",
   },
   {
-    name: 'status',
+    name: 'enterprise_id_status',
     label: 'Estatus',
     type: 'text',
     size: 'small',

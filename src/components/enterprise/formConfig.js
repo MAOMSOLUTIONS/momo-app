@@ -14,7 +14,7 @@
     { id: 'enterprise_fiscal_state', label: 'Estado Físcal', sm: 6, required: false, section: 'fiscal' },
     { id: 'enterprise_fiscal_country', label: 'País Físcal', sm: 6, required: false, section: 'fiscal' },
     { id: 'enterprise_fiscal_postal_code', label: 'CP Físcal', sm: 6, required: false, section: 'fiscal' },
-    { id: 'id_enterprise_status', label: 'Estatus', sm: 6, type: 'select', required: false, 
+    { id: 'enterprise_id_status', label: 'Estatus', sm: 6, type: 'select', required: false, 
     options: [
       { id: '1', value: 'Activo' },
       { id: '2', value: 'Inactivo' }

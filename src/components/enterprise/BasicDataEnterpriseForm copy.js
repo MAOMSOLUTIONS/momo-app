@@ -76,6 +76,7 @@ const BasicDataEnterpriseForm = ({ onUserUpdated,initialValues, setSelectedUser,
         newErrors[field.id] = 'Campo obligatorio';
       }
     });
+
     console.log("aqui esta la información")
 
     if (Object.keys(newErrors).length > 0) {
@@ -86,12 +87,16 @@ const BasicDataEnterpriseForm = ({ onUserUpdated,initialValues, setSelectedUser,
       return;
     }
     try {
+      console.log("Preparando la información para enviar");
       const dataToSend = {
         id_enterprise: formValues.id_enterprise,
         enterprise_name: formValues.enterprise_name,
         rfc: formValues.rfc,
-        status: formValues.status
-      };
+        id_status: formValues.id_enterprise_status?.id || null,
+        status: formValues.id_enterprise_status?.value || null,
+      };      
+      
+      console.log("Datos a enviar:", dataToSend);
       const response = await axios[method](url, dataToSend);
       if (response.status === 201 || response.status === 200) { // Asumiendo que 201 es para creación y 200 para actualización
           const action = isCreating ? 'creado' : 'actualizado';

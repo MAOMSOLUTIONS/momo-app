@@ -26,7 +26,7 @@ const BasicDataEnterpriseForm = ({ onUserUpdated,initialValues, setSelectedUser,
   const [snackbarMessage, setSnackbarMessage] = useState('');
   const [snackbarSeverity, setSnackbarSeverity] = useState('success');
   const [isCreating, setIsCreating] = useState(true);
-  const [accordionLabel, setAccordionLabel] = useState('Crear Usuario');
+  const [accordionLabel, setAccordionLabel] = useState('Crear Empresa');
   const [errors, setErrors] = useState({});
   const basicFields = formFields.filter((field) => field.section === 'basic');
   const fiscalFields = formFields.filter((field) => field.section === 'fiscal');
@@ -54,7 +54,7 @@ const BasicDataEnterpriseForm = ({ onUserUpdated,initialValues, setSelectedUser,
   const handleClearFields = () => {
     setFormValues({});
     setIsCreating(true);
-    onClear(); // Notifica al componente padre para resetear el usuario seleccionado
+    onClear(); // Notifica al componente padre para resetear la empresa seleccionado
     setErrors({});
   };
 
@@ -92,20 +92,31 @@ const BasicDataEnterpriseForm = ({ onUserUpdated,initialValues, setSelectedUser,
       return;
     }
     try {
-      console.log("aqui esta la información 2")
       const dataToSend = {
         id_enterprise: formValues.id_enterprise,
         enterprise_name: formValues.enterprise_name,
-        rfc: formValues.rfc,
-        id_status: formValues.id_enterprise_status ? formValues.id_enterprise_status.id : null,
-        status: formValues.id_enterprise_status ? formValues.id_enterprise_status.value : null,
+        rfc: formValues.enterprise_rfc,
+        enterprise_rfc: formValues.enterprise_rfc,
+        enterprise_phone: formValues.enterprise_phone|| 0,
+        enterprise_email: formValues.enterprise_email,
+        enterprise_contact_name: formValues.enterprise_contact_name,
+        enterpise_fiscal_name: formValues.enterpise_fiscal_name,
+        enterprise_fiscal_street: formValues.enterprise_fiscal_street,
+        enterprise_fiscal_internal_number: formValues.enterprise_fiscal_internal_number,
+        enterprise_fiscal_external_number: formValues.enterprise_fiscal_external_number,
+        enterprise_fiscal_municipio: formValues.enterprise_fiscal_municipio,
+        enterprise_fiscal_state: formValues.enterprise_fiscal_state,
+        enterprise_fiscal_country: formValues.enterprise_fiscal_country,
+        enterprise_fiscal_postal_code: formValues.enterprise_fiscal_postal_code,
+        enterprise_id_status: formValues.enterprise_id_status,
+        enterpise_fiscal_email: formValues.enterpise_fiscal_email,
+        enterprise_fiscal_phone: formValues.enterprise_fiscal_phone
       };
-      console.log("aqui")
       const response = await axios[method](url, dataToSend);
       if (response.status === 201 || response.status === 200) { // Asumiendo que 201 es para creación y 200 para actualización
           const action = isCreating ? 'creado' : 'actualizado';
           const userId = response.data.idUser; // Asegúrate de que la respuesta contenga este campo para ambos casos
-          setSnackbarMessage(`Usuario ${action} con éxito. ID: ${userId}`);
+          setSnackbarMessage(`Empresa ${action} creada con éxito. ID: ${userId}`);
           setSnackbarSeverity('success');
 
           setOpenSnackbar(true);
@@ -114,7 +125,7 @@ const BasicDataEnterpriseForm = ({ onUserUpdated,initialValues, setSelectedUser,
             setFormValues({});
             setIsCreating(true);
             if (typeof onClear === 'function') {
-              onClear();// Notifica al componente padre para resetear el usuario seleccionado
+              onClear();// Notifica al componente padre para resetear la empresa seleccionado
             }
             //onUserUpdated();
             setErrors({});
@@ -125,7 +136,7 @@ const BasicDataEnterpriseForm = ({ onUserUpdated,initialValues, setSelectedUser,
       }
     } catch (error) {
       console.error('Hubo un error al enviar el formulario:', error);
-      const defaultErrorMessage = isCreating ? 'Error al crear la empresa' : 'Error al actualizar el usuario';      
+      const defaultErrorMessage = isCreating ? 'Error al crear la empresa' : 'Error al actualizar la empresa';      
       if (error.response && error.response.data && error.response.data.message) {
         // Utiliza el mensaje de error de la API
         setSnackbarMessage(`Error al crear la empresa: ${error.response.data.message}`);

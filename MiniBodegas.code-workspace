@@ -1,0 +1,14 @@
+{
+	"folders": [
+		{
+			"path": ".."
+		},
+		{
+			"name": "minibodegas_front",
+			"path": "minibodegas_front"
+		}
+	],
+	"settings": {
+		"git.ignoreLimitWarning": true
+	}
+}

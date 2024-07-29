@@ -5,7 +5,7 @@ import {
   Box,
   Snackbar,
   Alert,
-  Typography, // Importa Typography
+  Typography,
 } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
 import axios from 'axios';
@@ -29,7 +29,7 @@ const theme = createTheme({
   },
 });
 
-const EnterpriseList = ({ usersUpdated, setUsersUpdated,onEditUser , scrollToModifyUser}) => {
+const EnterpriseList = ({ usersUpdated, setUsersUpdated, onEditUser, scrollToModifyUser }) => {
   const [users, setUsers] = useState([]);
   const [searchParams, setSearchParams] = useState({
     idEnterprise: '',
@@ -64,7 +64,6 @@ const EnterpriseList = ({ usersUpdated, setUsersUpdated,onEditUser , scrollToMod
     scrollToModifyUser();
     setSelectedUser(user);
     onEditUser(user);
-//    setIsAccordionExpanded(true);
   };
 
   const handleConsultClick = () => {
@@ -81,14 +80,13 @@ const EnterpriseList = ({ usersUpdated, setUsersUpdated,onEditUser , scrollToMod
       handleSearch();
       setUsersUpdated(false);
     }
-  }, [consulting,usersUpdated]);
+  }, [consulting, usersUpdated]);
 
   const rawColumns = userColumns(onEditUser);
   const columns = rawColumns.filter(column => column.visible).map(({ visible, ...col }) => col);
 
   return (
-      <ThemeProvider theme={theme}>
-
+    <ThemeProvider theme={theme}>
       <Box sx={{ height: 400, width: '100%' }}>
         <Box sx={{ display: 'flex', gap: 2, marginBottom: 2 }}>
           {searchFields.map(field => (
@@ -111,10 +109,11 @@ const EnterpriseList = ({ usersUpdated, setUsersUpdated,onEditUser , scrollToMod
           columns={columns}
           pageSize={5}
           rowsPerPageOptions={[5]}
-          getRowId={(row) => row.id_user}
+          getRowId={(row) => row.id_enterprise} // Cambiado a id_enterprise
         />
       </Box>
     </ThemeProvider>
   );
 };
+
 export default EnterpriseList;
