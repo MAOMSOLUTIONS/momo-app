@@ -43,7 +43,6 @@ function Enterprise() {
 
   const handleUserUpdated = () => {
     setUsersUpdated(true);
-    setIsCreateAccordionOpen(false); // Contrae el acordeón después de la actualización
   };
 
   const scrollToModifyUser = () => {
@@ -73,7 +72,8 @@ function Enterprise() {
               />
             ) : (
               <CreateEnterpriseForm
-                onUserUpdated={handleUserUpdated} // Aquí también para la creación
+                selectedUser={selectedUser}
+                onCreateUser={handleCreateUser}
               />
             )}
           </div>
