@@ -15,7 +15,11 @@ import ExcelReader from '../cubicuadraje/ExcelReader';
 import User from '../users/User';
 import Enterprise from '../enterprise/Enterprise';
 import Property from '../property/Property';
+import Status from '../status/Status';
+import Asset_Type from '../assettype/AssetType';
+import Asset_Status from '../assetstatus/AssetStatus';
 import Asset from '../asset/Asset';
+
 import Customer from '../customer/Customer';
 import Reservation from '../reservation/Reservation';
 import Ocupacion from '../ocupacion/Ocupacion';
@@ -105,15 +109,28 @@ const Sidebar = ({ open, handleDrawerClose, handleMenuItemClick, changeLanguage 
           <ListItem button onClick={() => handleMenuItemSelect('Empresas')}>
             <ListItemText primary={t('- Empresas')} className="listItemStyle" />
           </ListItem>
-          <ListItem button onClick={() => handleMenuItemSelect('Usuarios')}>
-            <ListItemText primary={t('- Usuarios')} className="listItemStyle" />
-          </ListItem>
           <ListItem button onClick={() => handleMenuItemSelect('Propiedad')}>
             <ListItemText primary={t('- Propiedad')} className="listItemStyle" />
+          </ListItem>
+          <ListItem button onClick={() => handleMenuItemSelect('Estatus')}>
+            <ListItemText primary={t('- Estatus')} className="listItemStyle" />
           </ListItem>
           <ListItem button onClick={() => handleMenuItemSelect('Asset')}>
             <ListItemText primary={t('- Asset')} className="listItemStyle" />
           </ListItem>
+          <ListItem button onClick={() => handleMenuItemSelect('Asset_Type')}>
+            <ListItemText primary={t('- Tipo de Asset')} className="listItemStyle" />
+          </ListItem>
+          <ListItem button onClick={() => handleMenuItemSelect('Asset_Status')}>
+            <ListItemText primary={t('- Estatus del Asset')} className="listItemStyle" />
+          </ListItem>
+
+
+          <ListItem button onClick={() => handleMenuItemSelect('Usuarios')}>
+            <ListItemText primary={t('- Usuarios')} className="listItemStyle" />
+          </ListItem>
+
+          
           <ListItem button onClick={() => handleMenuItemSelect('Customer')}>
             <ListItemText primary={t('- Clientes')} className="listItemStyle" />
           </ListItem>
@@ -182,6 +199,8 @@ const Empresas = () => {
     </div>
   );
 };
+
+
 const Clientes = () => {
   const { t, i18n } = useTranslation();
   const changeLanguage = (lng) => {
@@ -189,7 +208,7 @@ const Clientes = () => {
   };
   return (
     <div>
-      <h2>{t('Clientes')}</h2>
+      <h2>{t('Propiedades')}</h2>
       <Property />
     </div>
   );
@@ -291,12 +310,27 @@ const Content = ({ selectedMenuItem, handleDrawerClose, changeLanguage }) => {
         );
     case 'Empresas':
         return (
-            <Empresas/>
+            <Enterprise/>
         );
     case 'Propiedad':
           return (
-              <Propiedad/>
+              <Property/>
           );            
+    case 'Estatus':
+      return (
+          <Status/>
+      );            
+    case 'Asset_Type':
+      return (
+          <Asset_Type/>
+    );            
+    case 'Asset_Status':
+      return (
+          <Asset_Status/>
+    );            
+  
+      
+
     case 'Asset':
             return (
           <Asset/>

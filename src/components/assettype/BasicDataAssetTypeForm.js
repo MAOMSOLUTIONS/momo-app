@@ -8,12 +8,12 @@ import {
   Tabs,
   Tab,
 } from '@mui/material';
-import DynamicFormFields from '../dinamico/DynamicFormFields';
-import AssetTabConfig from './AssetTabConfig';
-import AssetFormFields from './AssetFormConfig';
 import axios from 'axios';
+import DynamicFormFields from '../dinamico/DynamicFormFields';
+import tabConfig from './tabConfig';
+import formFields from './formConfig';
 
-const BasicDataAssetForm = ({ onAssetUpdated, initialValues, onClear }) => {
+const BasicDataAssetTypeForm = ({ onAssetTypeUpdated, initialValues, onClear }) => {
   const [formValues, setFormValues] = useState(initialValues || {});
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
@@ -22,52 +22,16 @@ const BasicDataAssetForm = ({ onAssetUpdated, initialValues, onClear }) => {
   const [errors, setErrors] = useState({});
   const [activeTab, setActiveTab] = useState(0);
   const [tabFields, setTabFields] = useState([]);
-  const [options, setOptions] = useState({
-    statuses: [],
-    assetTypes: [],
-    properties: []
-  });
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const [statusesRes, assetTypesRes, propertiesRes] = await Promise.all([
-          axios.get('http://127.0.0.1:5000/api/asset_status'),
-          axios.get('http://127.0.0.1:5000/api/asset_type'),
-          axios.get('http://127.0.0.1:5000/api/properties'),
-        ]);
-
-        setOptions({
-          statuses: statusesRes.data.map(status => ({ id: status.id_status, value: status.status_name })),
-          assetTypes: assetTypesRes.data.map(type => ({ id: type.id_asset_type, value: type.asset_type_name })),
-          properties: propertiesRes.data.map(property => ({ id: property.id_property, value: property.property_name })),
-        });
-      } catch (error) {
-        console.error('Error fetching options', error);
-      }
-    };
-
-    fetchData();
-  }, []);
-
-  useEffect(() => {
-    setFormValues(initialValues || {
-      asset_status: options.statuses[0]?.id || '',
-      asset_type: options.assetTypes[0]?.id || '',
-      id_property: options.properties[0]?.id || ''
-    });
+    setFormValues(initialValues || {});
     setIsCreating(!initialValues);
     handleTabChange(null, activeTab);
-  }, [initialValues, options]);
-
-  useEffect(() => {
-    const fieldsForTab = getFieldsForTab(activeTab);
-    setTabFields(fieldsForTab);
-  }, [options]);
+  }, [initialValues]);
 
   const getFieldsForTab = (tabIndex) => {
-    const section = AssetTabConfig[tabIndex]?.section;
-    return AssetFormFields(options.statuses, options.assetTypes, options.properties).filter((field) => field.section === section);
+    const section = tabConfig[tabIndex]?.section;
+    return formFields.filter((field) => field.section === section);
   };
 
   const handleTabChange = (event, newValue) => {
@@ -77,11 +41,7 @@ const BasicDataAssetForm = ({ onAssetUpdated, initialValues, onClear }) => {
   };
 
   const handleClearFields = () => {
-    setFormValues({
-      asset_status: options.statuses[0]?.id || '',
-      asset_type: options.assetTypes[0]?.id || '',
-      id_property: options.properties[0]?.id || ''
-    });
+    setFormValues({});
     setIsCreating(true);
     if (typeof onClear === 'function') onClear();
     setErrors({});
@@ -98,10 +58,10 @@ const BasicDataAssetForm = ({ onAssetUpdated, initialValues, onClear }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const method = isCreating ? 'post' : 'put';
-    const url = isCreating ? 'http://127.0.0.1:5000/api/assets' : `http://127.0.0.1:5000/api/assets/${formValues.id_asset}`;
+    const url = isCreating ? 'http://127.0.0.1:5000/api/asset_type' : `http://127.0.0.1:5000/api/asset_type/${formValues.id_asset_type}`;
 
     // Validación de campos obligatorios
-    const requiredFields = AssetFormFields(options.statuses, options.assetTypes, options.properties).filter((field) => field.required);
+    const requiredFields = formFields.filter((field) => field.required);
     const newErrors = {};
     requiredFields.forEach((field) => {
       if (!formValues[field.id]) {
@@ -121,19 +81,15 @@ const BasicDataAssetForm = ({ onAssetUpdated, initialValues, onClear }) => {
       const response = await axios[method](url, formValues);
       if (response.status === 201 || response.status === 200) {
         const action = isCreating ? 'creado' : 'actualizado';
-        setSnackbarMessage(`Asset ${action} con éxito. ID: ${response.data.id_asset}`);
+        setSnackbarMessage(`Tipo de Asset ${action} con éxito. ID: ${response.data.id_asset_type}`);
         setSnackbarSeverity('success');
         setOpenSnackbar(true);
 
         setTimeout(() => {
-          setFormValues({
-            asset_status: options.statuses[0]?.id || '',
-            asset_type: options.assetTypes[0]?.id || '',
-            id_property: options.properties[0]?.id || ''
-          });
+          setFormValues({});
           setIsCreating(true);
           if (typeof onClear === 'function') onClear();
-          if (typeof onAssetUpdated === 'function') onAssetUpdated(); // Llamada para actualizar el grid
+          if (typeof onAssetTypeUpdated === 'function') onAssetTypeUpdated(); // Llamada para actualizar el grid
           setErrors({});
         }, 2000);
       } else {
@@ -152,8 +108,6 @@ const BasicDataAssetForm = ({ onAssetUpdated, initialValues, onClear }) => {
     setOpenSnackbar(false);
   };
 
-  const getAccordionLabel = () => (isCreating ? 'Crear Asset' : 'Modificar Asset');
-
   return (
     <>
       <Snackbar open={openSnackbar} autoHideDuration={6000} onClose={handleCloseSnackbar}>
@@ -165,7 +119,7 @@ const BasicDataAssetForm = ({ onAssetUpdated, initialValues, onClear }) => {
         <Grid container spacing={2}>
           <Grid item xs={12}>
             <Tabs value={activeTab} onChange={handleTabChange}>
-              {AssetTabConfig.map((tab, index) => (
+              {tabConfig.map((tab, index) => (
                 <Tab key={index} label={tab.label.toString()} />
               ))}
             </Tabs>
@@ -177,7 +131,7 @@ const BasicDataAssetForm = ({ onAssetUpdated, initialValues, onClear }) => {
 
           <Grid item xs={12}>
             <Button type="submit" variant="contained" color="primary">
-              {getAccordionLabel()}
+              {isCreating ? 'Crear Tipo de Asset' : 'Modificar Tipo de Asset'}
             </Button>
             {!isCreating && (
               <Button variant="outlined" color="secondary" onClick={handleClearFields}>
@@ -191,4 +145,4 @@ const BasicDataAssetForm = ({ onAssetUpdated, initialValues, onClear }) => {
   );
 };
 
-export default BasicDataAssetForm;
+export default BasicDataAssetTypeForm;

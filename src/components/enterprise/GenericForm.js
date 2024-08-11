@@ -40,8 +40,8 @@ const GenericForm = ({ formFields, initialValues, onSubmit }) => {
                   disabled={field.disabled}
                 >
                   {field.options.map((option) => (
-                    <MenuItem key={option} value={option}>
-                      {option}
+                    <MenuItem key={option.id} value={option.id}>
+                      {option.value}
                     </MenuItem>
                   ))}
                 </Select>

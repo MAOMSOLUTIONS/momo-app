@@ -1,13 +1,12 @@
-import React, { useState,useRef,useEffect  } from 'react';
+import React, { useState, useRef } from 'react';
 import Accordion from '@mui/material/Accordion';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import Typography from '@mui/material/Typography';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import CreateEnterpriseForm from './CreatePropertyForm';
-import EnterpriseList from './PropertyList';
-import BasicDataEnterpriseForm from './BasicDataPropertyForm';
-
+import CreatePropertyForm from './CreatePropertyForm';
+import PropertyList from './PropertyList';
+import BasicDataPropertyForm from './BasicDataPropertyForm';
 import { useTranslation } from 'react-i18next';
 
 function Property() {
@@ -35,34 +34,27 @@ function Property() {
     }
     setSelectedUser(user);
     setIsCreateAccordionOpen(true);
-
   };
+
   const handleClearForm = () => {
     setSelectedUser(null);
-    setIsCreateAccordionOpen(true); // Mantiene el acordeón abierto
+    setIsCreateAccordionOpen(true);
   };
+
   const handleUserUpdated = () => {
     setUsersUpdated(true);
+    setIsCreateAccordionOpen(false);
   };
-  
+
   const scrollToModifyUser = () => {
     setIsCreateAccordionOpen(true);
-    // Retrasa el desplazamiento para dar tiempo al contenido para que se renderice.
-      if (modifyUserRef.current) {
-        modifyUserRef.current.scrollIntoView({ behavior: 'smooth', block: 'start'  });
-      }
+    if (modifyUserRef.current) {
+      modifyUserRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
   };
 
   return (
     <div>
-      <Accordion>
-        <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-          <Typography>{t('Consulta de Propiedad')}</Typography>
-        </AccordionSummary>
-        <AccordionDetails>
-          <EnterpriseList onEditUser={handleEditUser} scrollToModifyUser={scrollToModifyUser} usersUpdated={usersUpdated} setUsersUpdated={setUsersUpdated}/>
-        </AccordionDetails>
-      </Accordion>
       <Accordion expanded={isCreateAccordionOpen} onChange={() => setIsCreateAccordionOpen(!isCreateAccordionOpen)}>
         <AccordionSummary expandIcon={<ExpandMoreIcon />} ref={modifyUserRef}>
           <Typography>{!selectedUser ? t("Crear Propiedad") : t("Modificar Propiedad")}</Typography>
@@ -70,23 +62,28 @@ function Property() {
         <AccordionDetails>
           <div style={{ width: '100%' }}>
             {selectedUser !== null ? (
-              <BasicDataEnterpriseForm
+              <BasicDataPropertyForm
                 initialValues={selectedUser}
                 setSelectedUser={setSelectedUser}
                 isFieldsEnabled={isFieldsEnabled}
-//                onUserUpdated={handleUserUpdated}
+                onUserUpdated={handleUserUpdated}
                 onClear={handleClearForm}
               />
             ) : (
-              <CreateEnterpriseForm
-                selectedUser={selectedUser}
-                onCreateUser={handleCreateUser}
-              />
+              <CreatePropertyForm onUserUpdated={handleUserUpdated} />
             )}
           </div>
         </AccordionDetails>
       </Accordion>
-      
+
+      <Accordion>
+        <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+          <Typography>{t('Consulta de Propiedad')}</Typography>
+        </AccordionSummary>
+        <AccordionDetails>
+          <PropertyList onEditUser={handleEditUser} scrollToModifyUser={scrollToModifyUser} usersUpdated={usersUpdated} setUsersUpdated={setUsersUpdated}/>
+        </AccordionDetails>
+      </Accordion>
     </div>
   );
 }

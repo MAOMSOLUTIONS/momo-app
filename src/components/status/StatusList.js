@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import {
-  TextField,
+  TextField, // Asegúrate de importar TextField
   Button,
   Box,
   Snackbar,
@@ -11,8 +11,8 @@ import { DataGrid } from '@mui/x-data-grid';
 import axios from 'axios';
 import SearchIcon from '@mui/icons-material/Search';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import { userColumns } from './EnterpriseListTableConfig';
-import { searchFields } from './EnterpriseListFilterConfig';
+import { statusColumns } from './StatusListTableConfig';
+import { searchFields } from './StatusListFilterConfig';
 
 const theme = createTheme({
   components: {
@@ -29,25 +29,23 @@ const theme = createTheme({
   },
 });
 
-const EnterpriseList = ({ usersUpdated, setUsersUpdated, onEditUser, scrollToModifyUser }) => {
-  const [users, setUsers] = useState([]);
+const StatusList = ({ statusesUpdated, setStatusesUpdated, onEditStatus, scrollToModifyStatus }) => {
+  const [statuses, setStatuses] = useState([]);
   const [searchParams, setSearchParams] = useState({
-    idEnterprise: '',
-    EnterpriseName: '',
-    status: '',
+    id_status: '',
+    status_name: '',
   });
-  const [selectedUser, setSelectedUser] = useState(null);
+  const [selectedStatus, setSelectedStatus] = useState(null);
 
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
   const [snackbarSeverity, setSnackbarSeverity] = useState('success');
   const [consulting, setConsulting] = useState(false);
-  const [isAccordionExpanded, setIsAccordionExpanded] = useState(false);
 
   const handleSearch = async () => {
     try {
-      const response = await axios.get('http://127.0.0.1:5000/api/enterprise', { params: searchParams });
-      setUsers(response.data);
+      const response = await axios.get('http://127.0.0.1:5000/api/status', { params: searchParams });
+      setStatuses(response.data);
     } catch (error) {
       console.error('Error on search:', error);
     }
@@ -60,29 +58,24 @@ const EnterpriseList = ({ usersUpdated, setUsersUpdated, onEditUser, scrollToMod
     });
   };
 
-  const handleEditUser = (user) => {
-    scrollToModifyUser();
-    setSelectedUser(user);
-    onEditUser(user);
+  const handleEditStatus = (status) => {
+    scrollToModifyStatus();
+    setSelectedStatus(status);
+    onEditStatus(status);
   };
 
   const handleConsultClick = () => {
     setConsulting(true);
   };
 
-  const formatDate = (dateString) => {
-    const options = { year: 'numeric', month: 'numeric', day: 'numeric' };
-    return new Date(dateString).toLocaleDateString(undefined, options);
-  };
-
   useEffect(() => {
     if (consulting) {
       handleSearch();
-      setUsersUpdated(false);
+      setStatusesUpdated(false);
     }
-  }, [consulting, usersUpdated]);
+  }, [consulting, statusesUpdated]);
 
-  const rawColumns = userColumns(onEditUser);
+  const rawColumns = statusColumns(handleEditStatus);
   const columns = rawColumns.filter(column => column.visible).map(({ visible, ...col }) => col);
 
   return (
@@ -105,15 +98,15 @@ const EnterpriseList = ({ usersUpdated, setUsersUpdated, onEditUser, scrollToMod
           </Button>
         </Box>
         <DataGrid
-          rows={users}
+          rows={statuses}
           columns={columns}
           pageSize={5}
           rowsPerPageOptions={[5]}
-          getRowId={(row) => row.id_enterprise} // Cambiado a id_enterprise
+          getRowId={(row) => row.id_status}
         />
       </Box>
     </ThemeProvider>
   );
 };
 
-export default EnterpriseList;
+export default StatusList;

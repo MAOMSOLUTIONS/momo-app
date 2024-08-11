@@ -1,92 +1,83 @@
-import React, { useState,useRef,useEffect  } from 'react';
+import React, { useState, useRef } from 'react';
 import Accordion from '@mui/material/Accordion';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import Typography from '@mui/material/Typography';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import CreateEnterpriseForm from './CreateAssetForm';
-import EnterpriseList from './AssetList';
-import BasicDataEnterpriseForm from './BasicDataAssetForm';
-
-import { useTranslation } from 'react-i18next';
+import CreateAssetForm from './CreateAssetForm';
+import AssetList from './AssetList';
+import BasicDataAssetForm from './BasicDataAssetForm';
 
 function Asset() {
-  const { t } = useTranslation();
-  const [selectedUser, setSelectedUser] = useState(null);
+  const [selectedAsset, setSelectedAsset] = useState(null);
   const [isCreateAccordionOpen, setIsCreateAccordionOpen] = useState(false);
-  const [isFieldsEnabled, setIsFieldsEnabled] = useState(true);
-  const [usersUpdated, setUsersUpdated] = useState(false);
+  const [assetsUpdated, setAssetsUpdated] = useState(false);
 
-  const modifyUserRef = useRef(null);
+  const modifyAssetRef = useRef(null);
 
-  const handleCreateUser = () => {
-    setSelectedUser(null);
+  const handleCreateAsset = () => {
+    setSelectedAsset(null);
     setIsCreateAccordionOpen(true);
   };
 
-  const handleEditUser = (user) => {
-    if (modifyUserRef.current) {
-      modifyUserRef.current.scrollIntoView({ behavior: 'smooth' });
+  const handleEditAsset = (asset) => {
+    if (modifyAssetRef.current) {
+      modifyAssetRef.current.scrollIntoView({ behavior: 'smooth' });
     }
 
-    if (user.birth_date) {
-      const formattedBirthDate = new Date(user.birth_date).toISOString().slice(0, 10);
-      user.birth_date = formattedBirthDate;
-    }
-    setSelectedUser(user);
+    setSelectedAsset(asset);
     setIsCreateAccordionOpen(true);
-
   };
+
   const handleClearForm = () => {
-    setSelectedUser(null);
+    setSelectedAsset(null);
     setIsCreateAccordionOpen(true); // Mantiene el acordeón abierto
   };
-  const handleUserUpdated = () => {
-    setUsersUpdated(true);
+
+  const handleAssetUpdated = () => {
+    setAssetsUpdated(true);
+    setIsCreateAccordionOpen(false); // Contrae el acordeón después de la actualización
   };
-  
-  const scrollToModifyUser = () => {
+
+  const scrollToModifyAsset = () => {
     setIsCreateAccordionOpen(true);
-    // Retrasa el desplazamiento para dar tiempo al contenido para que se renderice.
-      if (modifyUserRef.current) {
-        modifyUserRef.current.scrollIntoView({ behavior: 'smooth', block: 'start'  });
-      }
+    if (modifyAssetRef.current) {
+      modifyAssetRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
   };
 
   return (
     <div>
-      <Accordion>
-        <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-          <Typography>{t('Consulta de Asset')}</Typography>
-        </AccordionSummary>
-        <AccordionDetails>
-          <EnterpriseList onEditUser={handleEditUser} scrollToModifyUser={scrollToModifyUser} usersUpdated={usersUpdated} setUsersUpdated={setUsersUpdated}/>
-        </AccordionDetails>
-      </Accordion>
+      {/* Acordeón para Crear/Modificar Asset */}
       <Accordion expanded={isCreateAccordionOpen} onChange={() => setIsCreateAccordionOpen(!isCreateAccordionOpen)}>
-        <AccordionSummary expandIcon={<ExpandMoreIcon />} ref={modifyUserRef}>
-          <Typography>{!selectedUser ? t("Crear Asset") : t("Modificar Asset")}</Typography>
+        <AccordionSummary expandIcon={<ExpandMoreIcon />} ref={modifyAssetRef}>
+          <Typography>{!selectedAsset ? 'Crear Asset' : 'Modificar Asset'}</Typography>
         </AccordionSummary>
         <AccordionDetails>
           <div style={{ width: '100%' }}>
-            {selectedUser !== null ? (
-              <BasicDataEnterpriseForm
-                initialValues={selectedUser}
-                setSelectedUser={setSelectedUser}
-                isFieldsEnabled={isFieldsEnabled}
-//                onUserUpdated={handleUserUpdated}
+            {selectedAsset !== null ? (
+              <BasicDataAssetForm
+                initialValues={selectedAsset}
+                setSelectedAsset={setSelectedAsset}
+                onAssetUpdated={handleAssetUpdated}
                 onClear={handleClearForm}
               />
             ) : (
-              <CreateEnterpriseForm
-                selectedUser={selectedUser}
-                onCreateUser={handleCreateUser}
-              />
+              <CreateAssetForm onAssetUpdated={handleAssetUpdated} />
             )}
           </div>
         </AccordionDetails>
       </Accordion>
-      
+
+      {/* Acordeón para Consulta de Assets */}
+      <Accordion>
+        <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+          <Typography>Consulta de Assets</Typography>
+        </AccordionSummary>
+        <AccordionDetails>
+          <AssetList onEditAsset={handleEditAsset} scrollToModifyAsset={scrollToModifyAsset} assetsUpdated={assetsUpdated} setAssetsUpdated={setAssetsUpdated}/>
+        </AccordionDetails>
+      </Accordion>
     </div>
   );
 }

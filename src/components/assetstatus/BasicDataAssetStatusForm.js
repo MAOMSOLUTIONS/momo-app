@@ -1,3 +1,4 @@
+// BasicDataAssetStatusForm.js
 import React, { useState, useEffect } from 'react';
 import {
   TextField,
@@ -5,66 +6,26 @@ import {
   Grid,
   Snackbar,
   Alert,
-  Tabs,
-  Tab,
 } from '@mui/material';
-import formFields from './EnterpriseformConfig';
-import tabConfig from './EnterprisetabConfig';
-import DynamicFormFields from '../dinamico/DynamicFormFields';
 import axios from 'axios';
+import assetStatusFormConfig from './AssetStatusFormConfig';
+import DynamicFormFields from '../dinamico/DynamicFormFields';
 
-
-
-
-
-const BasicDataEnterpriseForm = ({ onUserUpdated, initialValues, onClear }) => {
+const BasicDataAssetStatusForm = ({ onStatusUpdated, initialValues, onClear }) => {
   const [formValues, setFormValues] = useState(initialValues || {});
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
   const [snackbarSeverity, setSnackbarSeverity] = useState('success');
   const [isCreating, setIsCreating] = useState(true);
   const [errors, setErrors] = useState({});
-  const [activeTab, setActiveTab] = useState(0);
-  const [tabFields, setTabFields] = useState([]);
-  const [options, setOptions] = useState({ statuses: [] });
 
   useEffect(() => {
-    const fetchStatuses = async () => {
-      try {
-        const response = await axios.get('http://127.0.0.1:5000/api/status');
-        setOptions({ statuses: response.data.map(stat => ({ id: stat.id_status, value: stat.status_name })) });
-      } catch (error) {
-        console.error('Error fetching statuses', error);
-      }
-    };
-
-    fetchStatuses();
-  }, []);
-
-  useEffect(() => {
-    setFormValues(initialValues || { enterprise_id_status: options.statuses[0]?.id || '' });
+    setFormValues(initialValues || {});
     setIsCreating(!initialValues);
-    handleTabChange(null, activeTab);
-  }, [initialValues, options.statuses]);
-
-  useEffect(() => {
-    const fieldsForTab = getFieldsForTab(activeTab);
-    setTabFields(fieldsForTab);
-  }, [options]);
-
-  const getFieldsForTab = (tabIndex) => {
-    const section = tabConfig[tabIndex]?.section;
-    return formFields(options.statuses).filter((field) => field.section === section);
-  };
-
-  const handleTabChange = (event, newValue) => {
-    setActiveTab(newValue);
-    const fieldsForTab = getFieldsForTab(newValue);
-    setTabFields(fieldsForTab);
-  };
+  }, [initialValues]);
 
   const handleClearFields = () => {
-    setFormValues({ enterprise_id_status: options.statuses[0]?.id || '' });
+    setFormValues({});
     setIsCreating(true);
     if (typeof onClear === 'function') onClear();
     setErrors({});
@@ -81,10 +42,9 @@ const BasicDataEnterpriseForm = ({ onUserUpdated, initialValues, onClear }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const method = isCreating ? 'post' : 'put';
-    const url = isCreating ? 'http://127.0.0.1:5000/api/enterprises' : `http://127.0.0.1:5000/api/enterprises/${formValues.id_enterprise}`;
+    const url = isCreating ? 'http://127.0.0.1:5000/api/asset_status' : `http://127.0.0.1:5000/api/asset_status/${formValues.id_status}`;
 
-    // Validación de campos obligatorios
-    const requiredFields = formFields(options.statuses).filter((field) => field.required);
+    const requiredFields = assetStatusFormConfig().filter((field) => field.required);
     const newErrors = {};
     requiredFields.forEach((field) => {
       if (!formValues[field.id]) {
@@ -103,23 +63,22 @@ const BasicDataEnterpriseForm = ({ onUserUpdated, initialValues, onClear }) => {
     try {
       const response = await axios[method](url, formValues);
       if (response.status === 201 || response.status === 200) {
-        const action = isCreating ? 'creada' : 'actualizada';
-        setSnackbarMessage(`Empresa ${action} con éxito. ID: ${response.data.enterprise_id}`);
+        const action = isCreating ? 'creado' : 'actualizado';
+        setSnackbarMessage(`Estatus del Asset ${action} con éxito.`);
         setSnackbarSeverity('success');
         setOpenSnackbar(true);
 
         setTimeout(() => {
-          setFormValues({ enterprise_id_status: options.statuses[0]?.id || '' });
+          setFormValues({});
           setIsCreating(true);
           if (typeof onClear === 'function') onClear();
-          if (typeof onUserUpdated === 'function') onUserUpdated(); // Llamada para actualizar el grid
+          if (typeof onStatusUpdated === 'function') onStatusUpdated();
           setErrors({});
         }, 2000);
       } else {
         throw new Error(`Respuesta no esperada del servidor: ${response.status}`);
       }
     } catch (error) {
-      console.error('Hubo un error al enviar el formulario:', error);
       setSnackbarMessage('Error al procesar la solicitud');
       setSnackbarSeverity('error');
       setOpenSnackbar(true);
@@ -131,8 +90,6 @@ const BasicDataEnterpriseForm = ({ onUserUpdated, initialValues, onClear }) => {
     setOpenSnackbar(false);
   };
 
-  const getAccordionLabel = () => (isCreating ? 'Crear Empresa' : 'Modificar Empresa');
-
   return (
     <>
       <Snackbar open={openSnackbar} autoHideDuration={6000} onClose={handleCloseSnackbar}>
@@ -142,21 +99,10 @@ const BasicDataEnterpriseForm = ({ onUserUpdated, initialValues, onClear }) => {
       </Snackbar>
       <form onSubmit={handleSubmit} noValidate autoComplete="off">
         <Grid container spacing={2}>
-          <Grid item xs={12}>
-            <Tabs value={activeTab} onChange={handleTabChange}>
-              {tabConfig.map((tab, index) => (
-                <Tab key={index} label={tab.label.toString()} />
-              ))}
-            </Tabs>
-          </Grid>
-
-          <Grid item xs={12}>
-            <DynamicFormFields formConfig={tabFields} formValues={formValues} errors={errors} handleInputChange={handleInputChange} />
-          </Grid>
-
+          <DynamicFormFields formConfig={assetStatusFormConfig()} formValues={formValues} errors={errors} handleInputChange={handleInputChange} />
           <Grid item xs={12}>
             <Button type="submit" variant="contained" color="primary">
-              {getAccordionLabel()}
+              {isCreating ? 'Crear Estatus del Asset' : 'Modificar Estatus del Asset'}
             </Button>
             {!isCreating && (
               <Button variant="outlined" color="secondary" onClick={handleClearFields}>
@@ -170,4 +116,4 @@ const BasicDataEnterpriseForm = ({ onUserUpdated, initialValues, onClear }) => {
   );
 };
 
-export default BasicDataEnterpriseForm;
+export default BasicDataAssetStatusForm;

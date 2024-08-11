@@ -11,8 +11,8 @@ import { DataGrid } from '@mui/x-data-grid';
 import axios from 'axios';
 import SearchIcon from '@mui/icons-material/Search';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import { assetColumns } from './AssetListTableConfig';
-import { searchFields } from './AssetListFilterConfig';
+import { assetTypeColumns } from './AssetTypeTableConfig';
+import { searchFields } from './AssetTypeListFilterConfig';
 
 const theme = createTheme({
   components: {
@@ -29,25 +29,22 @@ const theme = createTheme({
   },
 });
 
-const AssetList = ({ assetsUpdated, setAssetsUpdated, onEditAsset, scrollToModifyAsset }) => {
-  const [assets, setAssets] = useState([]);
+const AssetTypeList = ({ assetTypesUpdated, setAssetTypesUpdated, onEditAssetType }) => {
+  const [assetTypes, setAssetTypes] = useState([]);
   const [searchParams, setSearchParams] = useState({
-    idAsset: '',
-    assetName: '',
-    status: '',
+    id_asset_type: '',
+    asset_type_name: '',
   });
-  const [selectedAsset, setSelectedAsset] = useState(null);
 
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
   const [snackbarSeverity, setSnackbarSeverity] = useState('success');
   const [consulting, setConsulting] = useState(false);
-  const [isAccordionExpanded, setIsAccordionExpanded] = useState(false);
 
   const handleSearch = async () => {
     try {
-      const response = await axios.get('http://127.0.0.1:5000/api/assets', { params: searchParams });
-      setAssets(response.data);
+      const response = await axios.get('http://127.0.0.1:5000/api/asset_type', { params: searchParams });
+      setAssetTypes(response.data);
     } catch (error) {
       console.error('Error on search:', error);
     }
@@ -60,10 +57,8 @@ const AssetList = ({ assetsUpdated, setAssetsUpdated, onEditAsset, scrollToModif
     });
   };
 
-  const handleEditAsset = (asset) => {
-    scrollToModifyAsset();
-    setSelectedAsset(asset);
-    onEditAsset(asset);
+  const handleEditAssetType = (assetType) => {
+    onEditAssetType(assetType);
   };
 
   const handleConsultClick = () => {
@@ -73,11 +68,11 @@ const AssetList = ({ assetsUpdated, setAssetsUpdated, onEditAsset, scrollToModif
   useEffect(() => {
     if (consulting) {
       handleSearch();
-      setAssetsUpdated(false);
+      setAssetTypesUpdated(false);
     }
-  }, [consulting, assetsUpdated]);
+  }, [consulting, assetTypesUpdated]);
 
-  const rawColumns = assetColumns(onEditAsset);
+  const rawColumns = assetTypeColumns(handleEditAssetType);
   const columns = rawColumns.filter(column => column.visible).map(({ visible, ...col }) => col);
 
   return (
@@ -100,15 +95,15 @@ const AssetList = ({ assetsUpdated, setAssetsUpdated, onEditAsset, scrollToModif
           </Button>
         </Box>
         <DataGrid
-          rows={assets}
+          rows={assetTypes}
           columns={columns}
           pageSize={5}
           rowsPerPageOptions={[5]}
-          getRowId={(row) => row.id_asset} // Cambiado a id_asset
+          getRowId={(row) => row.id_asset_type}
         />
       </Box>
     </ThemeProvider>
   );
 };
 
-export default AssetList;
+export default AssetTypeList;

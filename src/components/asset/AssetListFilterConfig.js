@@ -1,30 +1,26 @@
 export const searchFields = [
   {
-    name: 'idEnterprise',
-    label: 'Id',
-    type: 'text',
+    name: 'id_property',
+    label: 'Propiedad',
+    type: 'select',
     size: 'small',
-    variant:"standard",
+    variant: "standard",
+    options: [] // Los datos se llenan dinámicamente
   },
   {
-    name: 'EnterpriseName',
-    label: 'Nombre',
-    type: 'text',
+    name: 'asset_type',
+    label: 'Tipo de Asset',
+    type: 'select',
     size: 'small',
-    variant:"standard",
+    variant: "standard",
+    options: [] // Los datos se llenan dinámicamente
   },
   {
-    name: 'rfc',
-    label: 'RFC',
-    type: 'text',
-    size: 'small',
-    variant:"standard",
-  },
-  {
-    name: 'status',
+    name: 'asset_status',
     label: 'Estatus',
-    type: 'text',
+    type: 'select',
     size: 'small',
-    variant:"standard",
-  }
+    variant: "standard",
+    options: [] // Los datos se llenan dinámicamente
+  },
 ];

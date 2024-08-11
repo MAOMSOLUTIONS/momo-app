@@ -28,10 +28,6 @@ function Enterprise() {
       modifyUserRef.current.scrollIntoView({ behavior: 'smooth' });
     }
 
-    if (user.birth_date) {
-      const formattedBirthDate = new Date(user.birth_date).toISOString().slice(0, 10);
-      user.birth_date = formattedBirthDate;
-    }
     setSelectedUser(user);
     setIsCreateAccordionOpen(true);
   };

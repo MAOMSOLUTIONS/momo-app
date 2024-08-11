@@ -1,60 +1,104 @@
 import React, { useState, useEffect } from 'react';
-import {
-  TextField,
-  Button,
-  Grid,
-  Select,
-  MenuItem,
-  InputLabel,
-  FormControl,
-  Snackbar,
-  Alert,
-} from '@mui/material';
-import formFields from './formConfig';
-import DynamicFormFields from '../dinamico/DynamicFormFields';
-
+import { TextField, Button, Grid, Snackbar, Alert, Tabs, Tab, Select, MenuItem, FormControl, InputLabel } from '@mui/material';
+import getFormFields from './formConfig';
+import tabConfig from './tabConfig';
 import axios from 'axios';
-import { format, parse } from 'date-fns';
-const BasicDataPropertyForm = ({ onUserUpdated,initialValues, setSelectedUser, isFieldsEnabled, onClear  }) => {
+
+const BasicDataPropertyForm = ({ onUserUpdated, initialValues, onClear }) => {
   const [formValues, setFormValues] = useState(initialValues || {});
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
   const [snackbarSeverity, setSnackbarSeverity] = useState('success');
   const [isCreating, setIsCreating] = useState(true);
-  const [accordionLabel, setAccordionLabel] = useState('Crear Propiedad');
   const [errors, setErrors] = useState({});
+  const [activeTab, setActiveTab] = useState(0);
+  const [tabFields, setTabFields] = useState([]);
+  const [options, setOptions] = useState({ enterprises: [], statuses: [] });
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [enterprisesResponse, statusesResponse] = await Promise.all([
+          axios.get('http://127.0.0.1:5000/api/enterprise_active'),
+          axios.get('http://127.0.0.1:5000/api/status')
+        ]);
+
+        const enterprises = enterprisesResponse.data.map(ent => ({ id: ent.id_enterprise, value: ent.enterprise_name }));
+        const statuses = statusesResponse.data.map(stat => ({ id: stat.id_status, value: stat.status_name }));
+
+        setOptions({ enterprises, statuses });
+
+        if (enterprises.length > 0 && !formValues.enterprise_id) {
+          setFormValues(prevValues => ({
+            ...prevValues,
+            enterprise_id: enterprises[0].id
+          }));
+        }
+        if (statuses.length > 0 && !formValues.property_id_status) {
+          setFormValues(prevValues => ({
+            ...prevValues,
+            property_id_status: statuses[0].id
+          }));
+        }
+
+      } catch (error) {
+        console.error('Error fetching options data', error);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   useEffect(() => {
     setFormValues(initialValues || {});
     setIsCreating(!initialValues);
+    handleTabChange(null, activeTab);
   }, [initialValues]);
+
+  useEffect(() => {
+    const fieldsForTab = getFieldsForTab(activeTab);
+    setTabFields(fieldsForTab);
+  }, [options]);
+
+  const getFieldsForTab = (tabIndex) => {
+    const section = tabConfig[tabIndex]?.section;
+    const formFields = getFormFields(options.enterprises, options.statuses);
+    return formFields.filter((field) => field.section === section);
+  };
+
+  const handleTabChange = (event, newValue) => {
+    setActiveTab(newValue);
+    const fieldsForTab = getFieldsForTab(newValue);
+    setTabFields(fieldsForTab);
+  };
 
   const handleClearFields = () => {
     setFormValues({});
     setIsCreating(true);
-    onClear(); // Notifica al componente padre para resetear el usuario seleccionado
+    if (typeof onClear === 'function') onClear();
     setErrors({});
   };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormValues({ ...formValues, [name]: value });
+    setFormValues((prevValues) => ({
+      ...prevValues,
+      [name]: value,
+    }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     const method = isCreating ? 'post' : 'put';
-    const url = isCreating ? 'http://127.0.0.1:5000/api/enterprises' : `http://127.0.0.1:5000/api/enterprises/${formValues.id_user}`;
-    // Verifica si los campos obligatorios están vacíos antes de enviar el formulario
-    const requiredFields = formFields.filter((field) => field.required);
-    const newErrors = {};
+    const url = isCreating ? 'http://127.0.0.1:5000/api/properties' : `http://127.0.0.1:5000/api/properties/${formValues.id_property}`;
 
+    const requiredFields = getFormFields().filter((field) => field.required);
+    const newErrors = {};
     requiredFields.forEach((field) => {
-      if (!formValues[field.id] || (Array.isArray(formValues[field.id]) && formValues[field.id].length === 0)) {
+      if (!formValues[field.id]) {
         newErrors[field.id] = 'Campo obligatorio';
       }
     });
-    console.log("aqui esta la información")
 
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
@@ -63,94 +107,100 @@ const BasicDataPropertyForm = ({ onUserUpdated,initialValues, setSelectedUser, i
       setOpenSnackbar(true);
       return;
     }
+
     try {
-      const dataToSend = {
-        id_enterprise: formValues.id_enterprise,
-        enterprise_name: formValues.enterprise_name,
-        rfc: formValues.rfc,
-        status: formValues.status
-      };
-      const response = await axios[method](url, dataToSend);
-      if (response.status === 201 || response.status === 200) { // Asumiendo que 201 es para creación y 200 para actualización
-          const action = isCreating ? 'creado' : 'actualizado';
-          const userId = response.data.idUser; // Asegúrate de que la respuesta contenga este campo para ambos casos
-          setSnackbarMessage(`Usuario ${action} con éxito. ID: ${userId}`);
-          setSnackbarSeverity('success');
+      const response = await axios[method](url, formValues);
+      if (response.status === 201 || response.status === 200) {
+        const action = isCreating ? 'creada' : 'actualizada';
+        setSnackbarMessage(`Propiedad ${action} con éxito. ID: ${response.data.property_id}`);
+        setSnackbarSeverity('success');
+        setOpenSnackbar(true);
 
-          setOpenSnackbar(true);
-
-          setTimeout(() => {
-            setFormValues({});
-            setIsCreating(true);
-            if (typeof onClear === 'function') {
-              onClear();// Notifica al componente padre para resetear el usuario seleccionado
-            }
-            //onUserUpdated();
-            setErrors({});
-          }, 3000); // Espera 3 segundos antes de limpiar
-//          handleClearFields();
+        setTimeout(() => {
+          setFormValues({});
+          setIsCreating(true);
+          if (typeof onClear === 'function') onClear();
+          if (typeof onUserUpdated === 'function') onUserUpdated();
+          setErrors({});
+        }, 2000);
       } else {
         throw new Error(`Respuesta no esperada del servidor: ${response.status}`);
       }
     } catch (error) {
       console.error('Hubo un error al enviar el formulario:', error);
-      const defaultErrorMessage = isCreating ? 'Error al crear el usuario' : 'Error al actualizar el usuario';      
-      if (error.response && error.response.data && error.response.data.message) {
-        // Utiliza el mensaje de error de la API
-        setSnackbarMessage(`Error al crear el usuario: ${error.response.data.message}`);
-      } else {
-        // Si no hay un mensaje de error específico, usa un mensaje genérico
-        setSnackbarMessage('Error al crear el usuario');
-      }
+      setSnackbarMessage('Error al procesar la solicitud');
       setSnackbarSeverity('error');
       setOpenSnackbar(true);
-      setOpenSnackbar(true);
-    }finally {
-      setOpenSnackbar(true);
-      if (isCreating) {
-          setFormValues({}); // Limpia los campos solo si es creación
-      }
-      setIsCreating(true); // Esto podría necesitar revisión dependiendo de cómo quieras manejar el estado después de enviar
-      setErrors({});
-  }
-
-
+    }
   };
 
   const handleCloseSnackbar = (event, reason) => {
-    if (reason === 'clickaway') {
-      return;
-    }
+    if (reason === 'clickaway') return;
     setOpenSnackbar(false);
   };
 
-  const getAccordionLabel = () => {
-    return isCreating ? 'Crear Propiedad' : 'Modificar Propiedad';
-  };
+  const getAccordionLabel = () => (isCreating ? 'Crear Propiedad' : 'Modificar Propiedad');
 
   return (
     <>
-      <Snackbar
-        open={openSnackbar}
-        autoHideDuration={6000}
-        onClose={handleCloseSnackbar}
-      >
-        <Alert
-          onClose={handleCloseSnackbar}
-          severity={snackbarSeverity}
-          sx={{ width: '100%' }}
-        >
+      <Snackbar open={openSnackbar} autoHideDuration={6000} onClose={handleCloseSnackbar}>
+        <Alert onClose={handleCloseSnackbar} severity={snackbarSeverity} sx={{ width: '100%' }}>
           {snackbarMessage}
         </Alert>
       </Snackbar>
       <form onSubmit={handleSubmit} noValidate autoComplete="off">
         <Grid container spacing={2}>
-          <DynamicFormFields
-            formConfig={formFields}
-            formValues={formValues}
-            errors={errors}
-            handleInputChange={handleInputChange}
-          />
+          <Grid item xs={12}>
+            <Tabs value={activeTab} onChange={handleTabChange}>
+              {tabConfig.map((tab, index) => (
+                <Tab key={index} label={tab.label} />
+              ))}
+            </Tabs>
+          </Grid>
+
+          <Grid item xs={12}>
+            {tabFields.map((field) => (
+              <Grid item xs={12} sm={field.sm} key={field.id}>
+                {field.type === 'select' ? (
+                  <FormControl fullWidth margin="normal" required={field.required}>
+                    <InputLabel id={`${field.id}-label`}>{field.label}</InputLabel>
+                    <Select
+                      labelId={`${field.id}-label`}
+                      id={field.id}
+                      name={field.id}
+                      value={formValues[field.id] && options[field.optionsKey]?.some(option => option.id === formValues[field.id]) ? formValues[field.id] : ''}
+                      onChange={handleInputChange}
+                      label={field.label}
+                      disabled={field.disabled}
+                    >
+                      {field.options.map((option) => (
+                        <MenuItem key={option.id} value={option.id}>
+                          {option.value}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                ) : (
+                  <TextField
+                    id={field.id}
+                    name={field.id}
+                    label={field.label}
+                    variant="outlined"
+                    fullWidth
+                    margin="normal"
+                    size="small"
+                    value={formValues[field.id] || ''}
+                    onChange={handleInputChange}
+                    type={field.type || 'text'}
+                    InputLabelProps={field.type === 'date' ? { shrink: true } : undefined}
+                    required={field.required}
+                    disabled={field.disabled}
+                  />
+                )}
+              </Grid>
+            ))}
+          </Grid>
+
           <Grid item xs={12}>
             <Button type="submit" variant="contained" color="primary">
               {getAccordionLabel()}
@@ -159,7 +209,6 @@ const BasicDataPropertyForm = ({ onUserUpdated,initialValues, setSelectedUser, i
               <Button variant="outlined" color="secondary" onClick={handleClearFields}>
                 Limpiar Campos
               </Button>
-
             )}
           </Grid>
         </Grid>

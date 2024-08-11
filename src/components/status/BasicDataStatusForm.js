@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import {
-  TextField,
   Button,
   Grid,
   Snackbar,
@@ -8,12 +7,12 @@ import {
   Tabs,
   Tab,
 } from '@mui/material';
-import formFields from './formConfig';
-import tabConfig from './tabConfig';
-import DynamicFormFields from '../dinamico/DynamicFormFields';
 import axios from 'axios';
+import DynamicFormFields from '../dinamico/DynamicFormFields';
+import tabConfig from './StatusTabConfig';
+import formFields from './StatusFormConfig';
 
-const BasicDataEnterpriseForm = ({ onUserUpdated, initialValues, onClear }) => {
+const BasicDataStatusForm = ({ onStatusUpdated, initialValues, onClear }) => {
   const [formValues, setFormValues] = useState(initialValues || {});
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
@@ -28,6 +27,11 @@ const BasicDataEnterpriseForm = ({ onUserUpdated, initialValues, onClear }) => {
     setIsCreating(!initialValues);
     handleTabChange(null, activeTab);
   }, [initialValues]);
+
+  useEffect(() => {
+    const fieldsForTab = getFieldsForTab(activeTab);
+    setTabFields(fieldsForTab);
+  }, []);
 
   const getFieldsForTab = (tabIndex) => {
     const section = tabConfig[tabIndex]?.section;
@@ -58,7 +62,7 @@ const BasicDataEnterpriseForm = ({ onUserUpdated, initialValues, onClear }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const method = isCreating ? 'post' : 'put';
-    const url = isCreating ? 'http://127.0.0.1:5000/api/enterprises' : `http://127.0.0.1:5000/api/enterprises/${formValues.id_enterprise}`;
+    const url = isCreating ? 'http://127.0.0.1:5000/api/status' : `http://127.0.0.1:5000/api/status/${formValues.id_status}`;
 
     // Validación de campos obligatorios
     const requiredFields = formFields.filter((field) => field.required);
@@ -80,8 +84,8 @@ const BasicDataEnterpriseForm = ({ onUserUpdated, initialValues, onClear }) => {
     try {
       const response = await axios[method](url, formValues);
       if (response.status === 201 || response.status === 200) {
-        const action = isCreating ? 'creada' : 'actualizada';
-        setSnackbarMessage(`Empresa ${action} con éxito. ID: ${response.data.enterprise_id}`);
+        const action = isCreating ? 'creado' : 'actualizado';
+        setSnackbarMessage(`Estatus ${action} con éxito. ID: ${response.data.id_status}`);
         setSnackbarSeverity('success');
         setOpenSnackbar(true);
 
@@ -89,9 +93,9 @@ const BasicDataEnterpriseForm = ({ onUserUpdated, initialValues, onClear }) => {
           setFormValues({});
           setIsCreating(true);
           if (typeof onClear === 'function') onClear();
-          if (typeof onUserUpdated === 'function') onUserUpdated(); // Llamada para actualizar el grid
+          if (typeof onStatusUpdated === 'function') onStatusUpdated(); // Llamada para actualizar el grid
           setErrors({});
-        }, 3000);
+        }, 2000);
       } else {
         throw new Error(`Respuesta no esperada del servidor: ${response.status}`);
       }
@@ -108,7 +112,7 @@ const BasicDataEnterpriseForm = ({ onUserUpdated, initialValues, onClear }) => {
     setOpenSnackbar(false);
   };
 
-  const getAccordionLabel = () => (isCreating ? 'Crear Empresa' : 'Modificar Empresa');
+  const getAccordionLabel = () => (isCreating ? 'Crear Estatus' : 'Modificar Estatus');
 
   return (
     <>
@@ -147,4 +151,4 @@ const BasicDataEnterpriseForm = ({ onUserUpdated, initialValues, onClear }) => {
   );
 };
 
-export default BasicDataEnterpriseForm;
+export default BasicDataStatusForm;
