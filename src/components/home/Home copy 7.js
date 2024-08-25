@@ -18,8 +18,6 @@ import SettingsIcon from '@mui/icons-material/Settings';
 import PeopleIcon from '@mui/icons-material/People';
 import ReservationIcon from '@mui/icons-material/CalendarToday';
 import Tooltip from '@mui/material/Tooltip';
-import PriceChangeIcon from '@mui/icons-material/PriceChange';
-
 import { useTranslation } from 'react-i18next';
 
 import Enterprise from '../enterprise/Enterprise';
@@ -31,7 +29,6 @@ import ReservationStatus from '../reservationstatus/ReservationStatus';
 import Client from '../client/Client';
 import Reservation from '../reservation/Reservation';
 import Status from '../status/Status';
-import PriceManagement from '../pricemanagement/PriceManagement'
 
 import './Home.css';
 
@@ -105,14 +102,12 @@ const Sidebar = ({ open, handleDrawerClose, handleMenuItemClick }) => {
                 </Tooltip>
                 <ListItemText primary={t('Estatus del Asset')} />
               </ListItem>
-
               <ListItem button onClick={() => handleMenuItemClick('Asset')}>
                 <Tooltip title={t('Asset')}>
                   <IconButton edge="start"><WarehouseIcon /></IconButton>
                 </Tooltip>
                 <ListItemText primary={t('Asset')} />
               </ListItem>
-
             </List>
           </Collapse>
           <ListItem button onClick={() => handleSubMenuClick('Reservaciones')} className="drawerStyle">
@@ -132,12 +127,6 @@ const Sidebar = ({ open, handleDrawerClose, handleMenuItemClick }) => {
               </ListItem>
             </List>
           </Collapse>
-          <ListItem button onClick={() => handleMenuItemClick('PriceManagement')} className="drawerStyle">
-            <Tooltip title={t('Gestión de Precios')}>
-              <IconButton edge="start"><PriceChangeIcon /></IconButton>
-            </Tooltip>
-            <ListItemText primary={t('Gestión de Precios')} />
-          </ListItem>
           <ListItem button onClick={() => handleSubMenuClick('General')} className="drawerStyle">
             <Tooltip title={t('General')}>
               <IconButton edge="start"><SettingsIcon /></IconButton>
@@ -170,7 +159,6 @@ const Sidebar = ({ open, handleDrawerClose, handleMenuItemClick }) => {
           </Tooltip>
           <ListItemText primary={t('Reservaciones')} />
         </ListItem>
-
       </List>
     </Drawer>
   );
@@ -204,8 +192,6 @@ const Content = ({ selectedMenuItem, handleDrawerClose }) => {
       return <Client />;
     case 'Reservaciones':
       return <Reservation />;
-    case 'PriceManagement':  // Nueva opción añadida aquí
-      return <PriceManagement />;
     default:
       return <div onClick={handleContentClick} style={{ padding: 20 }}>Selecciona una opción</div>;
   }

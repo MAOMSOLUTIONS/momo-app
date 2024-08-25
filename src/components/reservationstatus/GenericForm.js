@@ -1,21 +1,31 @@
-import React, { forwardRef } from 'react';
-
+import React, { useState } from 'react';
 import {
+  TextField,
+  Button,
   Grid,
-  FormControl,
-  InputLabel,
   Select,
   MenuItem,
-  TextField,
+  InputLabel,
+  FormControl,
 } from '@mui/material';
 
-const DynamicFormFields = forwardRef(({ formConfig, formValues, errors, handleInputChange }, ref) => {  // Aceptamos 'ref' como segundo parámetro
+const GenericForm = ({ formFields, initialValues, onSubmit }) => {
+  const [formValues, setFormValues] = useState(initialValues || {});
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormValues({ ...formValues, [name]: value });
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    onSubmit(formValues);
+  };
 
   return (
-    <Grid container spacing={2} ref={ref}>  {/* Pasamos 'ref' a algún elemento relevante */}
-      {formConfig
-        .filter((field) => field.visible !== false)
-        .map((field) => (
+    <form onSubmit={handleSubmit} noValidate autoComplete="off">
+      <Grid container spacing={2}>
+        {formFields.map((field) => (
           <Grid item xs={12} sm={field.sm} key={field.id}>
             {field.type === 'select' ? (
               <FormControl fullWidth margin="normal" required={field.required}>
@@ -28,7 +38,6 @@ const DynamicFormFields = forwardRef(({ formConfig, formValues, errors, handleIn
                   onChange={handleInputChange}
                   label={field.label}
                   disabled={field.disabled}
-                  error={!!errors[field.id]}
                 >
                   {field.options.map((option) => (
                     <MenuItem key={option.id} value={option.id}>
@@ -36,9 +45,6 @@ const DynamicFormFields = forwardRef(({ formConfig, formValues, errors, handleIn
                     </MenuItem>
                   ))}
                 </Select>
-                {errors[field.id] && (
-                  <div style={{ color: 'red' }}>{errors[field.id]}</div>
-                )}
               </FormControl>
             ) : (
               <TextField
@@ -55,14 +61,18 @@ const DynamicFormFields = forwardRef(({ formConfig, formValues, errors, handleIn
                 InputLabelProps={field.type === 'date' ? { shrink: true } : undefined}
                 required={field.required}
                 disabled={field.disabled}
-                error={!!errors[field.id]}
-                helperText={errors[field.id] ? errors[field.id] : ''}
               />
             )}
           </Grid>
         ))}
-    </Grid>
+        <Grid item xs={12}>
+          <Button type="submit" variant="contained" color="primary">
+            Enviar
+          </Button>
+        </Grid>
+      </Grid>
+    </form>
   );
-});
+};
 
-export default DynamicFormFields;
+export default GenericForm;

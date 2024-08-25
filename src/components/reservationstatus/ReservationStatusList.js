@@ -5,15 +5,14 @@ import {
   Box,
   Snackbar,
   Alert,
-  Typography, // Importa Typography
+  Typography,
 } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
 import axios from 'axios';
 import SearchIcon from '@mui/icons-material/Search';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import { userColumns } from './ReservationListTableConfig';
-import { searchFields } from './ReservationListFilterConfig';
-
+import { statusColumns } from './ReservationStatusListTableConfig';
+import { searchFields } from './ReservationStatusListFilterConfig';
 
 const theme = createTheme({
   components: {
@@ -30,25 +29,23 @@ const theme = createTheme({
   },
 });
 
-const CustomerList = ({ usersUpdated, setUsersUpdated,onEditUser , scrollToModifyUser}) => {
-  const [users, setUsers] = useState([]);
+const ReservationStatusList = ({ statusesUpdated, setStatusesUpdated, onEditStatus, scrollToModifyStatus }) => {
+  const [statuses, setStatuses] = useState([]);
   const [searchParams, setSearchParams] = useState({
-    idEnterprise: '',
-    EnterpriseName: '',
-    status: '',
+    id_reservation_status: '',
+    reservation_status_name: '',
   });
-  const [selectedUser, setSelectedUser] = useState(null);
+  const [selectedStatus, setSelectedStatus] = useState(null);
 
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
   const [snackbarSeverity, setSnackbarSeverity] = useState('success');
   const [consulting, setConsulting] = useState(false);
-  const [isAccordionExpanded, setIsAccordionExpanded] = useState(false);
 
   const handleSearch = async () => {
     try {
-      const response = await axios.get('http://127.0.0.1:5000/api/enterprise', { params: searchParams });
-      setUsers(response.data);
+      const response = await axios.get('http://127.0.0.1:5000/api/reservation_status', { params: searchParams });
+      setStatuses(response.data);
     } catch (error) {
       console.error('Error on search:', error);
     }
@@ -61,35 +58,28 @@ const CustomerList = ({ usersUpdated, setUsersUpdated,onEditUser , scrollToModif
     });
   };
 
-  const handleEditUser = (user) => {
-    scrollToModifyUser();
-    setSelectedUser(user);
-    onEditUser(user);
-//    setIsAccordionExpanded(true);
+  const handleEditStatus = (status) => {
+    scrollToModifyStatus();
+    setSelectedStatus(status);
+    onEditStatus(status);
   };
 
   const handleConsultClick = () => {
     setConsulting(true);
   };
 
-  const formatDate = (dateString) => {
-    const options = { year: 'numeric', month: 'numeric', day: 'numeric' };
-    return new Date(dateString).toLocaleDateString(undefined, options);
-  };
-
   useEffect(() => {
     if (consulting) {
       handleSearch();
-      setUsersUpdated(false);
+      setStatusesUpdated(false);
     }
-  }, [consulting,usersUpdated]);
+  }, [consulting, statusesUpdated]);
 
-  const rawColumns = userColumns(onEditUser);
+  const rawColumns = statusColumns(onEditStatus);
   const columns = rawColumns.filter(column => column.visible).map(({ visible, ...col }) => col);
 
   return (
-      <ThemeProvider theme={theme}>
-
+    <ThemeProvider theme={theme}>
       <Box sx={{ height: 400, width: '100%' }}>
         <Box sx={{ display: 'flex', gap: 2, marginBottom: 2 }}>
           {searchFields.map(field => (
@@ -108,14 +98,15 @@ const CustomerList = ({ usersUpdated, setUsersUpdated,onEditUser , scrollToModif
           </Button>
         </Box>
         <DataGrid
-          rows={users}
+          rows={statuses}
           columns={columns}
           pageSize={5}
           rowsPerPageOptions={[5]}
-          getRowId={(row) => row.id_user}
+          getRowId={(row) => row.id_reservation_status} 
         />
       </Box>
     </ThemeProvider>
   );
 };
-export default CustomerList;
+
+export default ReservationStatusList;

@@ -1,33 +1,24 @@
-import React, { useState } from 'react';
+import React, { forwardRef } from 'react';
+
 import {
-  TextField,
-  Button,
   Grid,
+  FormControl,
+  InputLabel,
   Select,
   MenuItem,
-  InputLabel,
-  FormControl,
+  TextField,
 } from '@mui/material';
 
-const GenericForm = ({ formFields, initialValues, onSubmit }) => {
-  const [formValues, setFormValues] = useState(initialValues || {});
-
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormValues({ ...formValues, [name]: value });
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    onSubmit(formValues);
-  };
+const DynamicFormFields = forwardRef(({ formConfig, formValues, errors, handleInputChange }) => {
 
   return (
-    <form onSubmit={handleSubmit} noValidate autoComplete="off">
-      <Grid container spacing={2}>
-        {formFields.map((field) => (
+    <Grid container spacing={2}>
+      {formConfig
+        .filter((field) => field.visible !== false)
+        .map((field) => (
           <Grid item xs={12} sm={field.sm} key={field.id}>
             {field.type === 'select' ? (
+              
               <FormControl fullWidth margin="normal" required={field.required}>
                 <InputLabel id={`${field.id}-label`}>{field.label}</InputLabel>
                 <Select
@@ -38,13 +29,17 @@ const GenericForm = ({ formFields, initialValues, onSubmit }) => {
                   onChange={handleInputChange}
                   label={field.label}
                   disabled={field.disabled}
+                  error={!!errors[field.id]}
                 >
                   {field.options.map((option) => (
-                    <MenuItem key={option} value={option}>
-                      {option}
+                    <MenuItem key={option.id} value={option.id}>
+                      {option.value}
                     </MenuItem>
                   ))}
                 </Select>
+                {errors[field.id] && (
+                  <div style={{ color: 'red' }}>{errors[field.id]}</div>
+                )}
               </FormControl>
             ) : (
               <TextField
@@ -61,18 +56,15 @@ const GenericForm = ({ formFields, initialValues, onSubmit }) => {
                 InputLabelProps={field.type === 'date' ? { shrink: true } : undefined}
                 required={field.required}
                 disabled={field.disabled}
+                error={!!errors[field.id]}
+                helperText={errors[field.id] ? errors[field.id] : ''}
               />
             )}
           </Grid>
         ))}
-        <Grid item xs={12}>
-          <Button type="submit" variant="contained" color="primary">
-            Enviar
-          </Button>
-        </Grid>
-      </Grid>
-    </form>
+    </Grid>
   );
-};
+}
+);
 
-export default GenericForm;
+export default DynamicFormFields;

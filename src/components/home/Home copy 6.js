@@ -18,8 +18,6 @@ import SettingsIcon from '@mui/icons-material/Settings';
 import PeopleIcon from '@mui/icons-material/People';
 import ReservationIcon from '@mui/icons-material/CalendarToday';
 import Tooltip from '@mui/material/Tooltip';
-import PriceChangeIcon from '@mui/icons-material/PriceChange';
-
 import { useTranslation } from 'react-i18next';
 
 import Enterprise from '../enterprise/Enterprise';
@@ -27,11 +25,10 @@ import Property from '../property/Property';
 import Asset_Type from '../assettype/AssetType';
 import Asset_Status from '../assetstatus/AssetStatus';
 import Asset from '../asset/Asset';
-import ReservationStatus from '../reservationstatus/ReservationStatus';
-import Client from '../client/Client';
+import ReservationStatus from '../reservation/Reservation';
+import Customer from '../customer/Customer';
 import Reservation from '../reservation/Reservation';
 import Status from '../status/Status';
-import PriceManagement from '../pricemanagement/PriceManagement'
 
 import './Home.css';
 
@@ -72,89 +69,69 @@ const Sidebar = ({ open, handleDrawerClose, handleMenuItemClick }) => {
           open={openSubMenu['Catalogos']} 
           handleClick={() => handleSubMenuClick('Catalogos')}
         >
-          <ListItem button onClick={() => handleMenuItemClick('Empresas')}>
+          <ListItem button onClick={() => handleMenuItemClick('Empresas')} style={{ paddingLeft: 40 }}>
             <Tooltip title={t('Empresas')}>
               <IconButton edge="start"><BusinessIcon /></IconButton>
             </Tooltip>
             <ListItemText primary={t('Empresas')} />
           </ListItem>
-          <ListItem button onClick={() => handleMenuItemClick('Propiedad')}>
+          <ListItem button onClick={() => handleMenuItemClick('Propiedad')} style={{ paddingLeft: 40 }}>
             <Tooltip title={t('Propiedad')}>
               <IconButton edge="start"><HomeWorkIcon /></IconButton>
             </Tooltip>
             <ListItemText primary={t('Propiedad')} />
           </ListItem>
-          <ListItem button onClick={() => handleSubMenuClick('Asset')} className="drawerStyle">
-            <Tooltip title={t('Asset')}>
-              <IconButton edge="start"><WarehouseIcon /></IconButton>
-            </Tooltip>
-            <ListItemText primary={t('Asset')} />
-            {openSubMenu['Asset'] ? <ExpandLess /> : <ExpandMore />}
-          </ListItem>
-          <Collapse in={openSubMenu['Asset']} timeout="auto" unmountOnExit>
-            <List component="div" disablePadding style={{ paddingLeft: 20, backgroundColor: '#f5f5f5' }}>
-              <ListItem button onClick={() => handleMenuItemClick('Asset_Type')}>
-                <Tooltip title={t('Tipo de Asset')}>
-                  <IconButton edge="start"><WarehouseIcon /></IconButton>
-                </Tooltip>
-                <ListItemText primary={t('Tipo de Asset')} />
-              </ListItem>
-              <ListItem button onClick={() => handleMenuItemClick('Asset_Status')}>
-                <Tooltip title={t('Estatus del Asset')}>
-                  <IconButton edge="start"><WarehouseIcon /></IconButton>
-                </Tooltip>
-                <ListItemText primary={t('Estatus del Asset')} />
-              </ListItem>
-
-              <ListItem button onClick={() => handleMenuItemClick('Asset')}>
-                <Tooltip title={t('Asset')}>
-                  <IconButton edge="start"><WarehouseIcon /></IconButton>
-                </Tooltip>
-                <ListItemText primary={t('Asset')} />
-              </ListItem>
-
-            </List>
-          </Collapse>
-          <ListItem button onClick={() => handleSubMenuClick('Reservaciones')} className="drawerStyle">
-            <Tooltip title={t('Reservaciones')}>
-              <IconButton edge="start"><ReservationIcon /></IconButton>
-            </Tooltip>
-            <ListItemText primary={t('Reservaciones')} />
-            {openSubMenu['Reservaciones'] ? <ExpandLess /> : <ExpandMore />}
-          </ListItem>
-          <Collapse in={openSubMenu['Reservaciones']} timeout="auto" unmountOnExit>
-            <List component="div" disablePadding style={{ paddingLeft: 20, backgroundColor: '#f5f5f5' }}>
-              <ListItem button onClick={() => handleMenuItemClick('ReservationStatus')}>
-                <Tooltip title={t('Estatus de la reservación')}>
-                  <IconButton edge="start"><EventAvailableIcon /></IconButton>
-                </Tooltip>
-                <ListItemText primary={t('Estatus de la reservación')} />
-              </ListItem>
-            </List>
-          </Collapse>
-          <ListItem button onClick={() => handleMenuItemClick('PriceManagement')} className="drawerStyle">
-            <Tooltip title={t('Gestión de Precios')}>
-              <IconButton edge="start"><PriceChangeIcon /></IconButton>
-            </Tooltip>
-            <ListItemText primary={t('Gestión de Precios')} />
-          </ListItem>
-          <ListItem button onClick={() => handleSubMenuClick('General')} className="drawerStyle">
-            <Tooltip title={t('General')}>
-              <IconButton edge="start"><SettingsIcon /></IconButton>
-            </Tooltip>
-            <ListItemText primary={t('General')} />
-            {openSubMenu['General'] ? <ExpandLess /> : <ExpandMore />}
-          </ListItem>
-          <Collapse in={openSubMenu['General']} timeout="auto" unmountOnExit>
-            <List component="div" disablePadding style={{ paddingLeft: 20, backgroundColor: '#f5f5f5' }}>
-              <ListItem button onClick={() => handleMenuItemClick('General_Status')}>
-                <Tooltip title={t('Estatus')}>
-                  <IconButton edge="start"><SettingsIcon /></IconButton>
-                </Tooltip>
-                <ListItemText primary={t('Estatus')} />
-              </ListItem>
-            </List>
-          </Collapse>
+          <SubMenu 
+            title={t('Asset')} 
+            icon={<WarehouseIcon />} 
+            open={openSubMenu['Asset']} 
+            handleClick={() => handleSubMenuClick('Asset')}
+          >
+            <ListItem button onClick={() => handleMenuItemClick('Asset_Type')} style={{ paddingLeft: 60 }}>
+              <Tooltip title={t('Tipo de Asset')}>
+                <IconButton edge="start"><WarehouseIcon /></IconButton>
+              </Tooltip>
+              <ListItemText primary={t('Tipo de Asset')} />
+            </ListItem>
+            <ListItem button onClick={() => handleMenuItemClick('Asset_Status')} style={{ paddingLeft: 60 }}>
+              <Tooltip title={t('Estatus del Asset')}>
+                <IconButton edge="start"><WarehouseIcon /></IconButton>
+              </Tooltip>
+              <ListItemText primary={t('Estatus del Asset')} />
+            </ListItem>
+            <ListItem button onClick={() => handleMenuItemClick('Asset')} style={{ paddingLeft: 60 }}>
+              <Tooltip title={t('Asset')}>
+                <IconButton edge="start"><WarehouseIcon /></IconButton>
+              </Tooltip>
+              <ListItemText primary={t('Asset')} />
+            </ListItem>
+          </SubMenu>
+          <SubMenu 
+            title={t('Reservaciones')} 
+            icon={<ReservationIcon />} 
+            open={openSubMenu['Reservaciones']} 
+            handleClick={() => handleSubMenuClick('Reservaciones')}
+          >
+            <ListItem button onClick={() => handleMenuItemClick('ReservationStatus')} style={{ paddingLeft: 40 }}>
+              <Tooltip title={t('Estatus de la reservación')}>
+                <IconButton edge="start"><EventAvailableIcon /></IconButton>
+              </Tooltip>
+              <ListItemText primary={t('Estatus de la reservación')} />
+            </ListItem>
+          </SubMenu>
+          <SubMenu 
+            title={t('General')} 
+            icon={<SettingsIcon />} 
+            open={openSubMenu['General']} 
+            handleClick={() => handleSubMenuClick('General')}
+          >
+            <ListItem button onClick={() => handleMenuItemClick('General_Status')} style={{ paddingLeft: 40 }}>
+              <Tooltip title={t('Estatus')}>
+                <IconButton edge="start"><SettingsIcon /></IconButton>
+              </Tooltip>
+              <ListItemText primary={t('Estatus')} />
+            </ListItem>
+          </SubMenu>
         </SubMenu>
 
         <ListItem button onClick={() => handleMenuItemClick('Clientes')} className="drawerStyle">
@@ -170,7 +147,6 @@ const Sidebar = ({ open, handleDrawerClose, handleMenuItemClick }) => {
           </Tooltip>
           <ListItemText primary={t('Reservaciones')} />
         </ListItem>
-
       </List>
     </Drawer>
   );
@@ -201,11 +177,9 @@ const Content = ({ selectedMenuItem, handleDrawerClose }) => {
     case 'General_Status':
       return <Status />;
     case 'Clientes':
-      return <Client />;
+      return <Customer />;
     case 'Reservaciones':
       return <Reservation />;
-    case 'PriceManagement':  // Nueva opción añadida aquí
-      return <PriceManagement />;
     default:
       return <div onClick={handleContentClick} style={{ padding: 20 }}>Selecciona una opción</div>;
   }
