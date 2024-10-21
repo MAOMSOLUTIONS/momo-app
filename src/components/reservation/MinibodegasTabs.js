@@ -9,7 +9,20 @@ function MinibodegasTabs() {
   const [selectedTab, setSelectedTab] = useState(0);
   const [selectedClient, setSelectedClient] = useState(null);   
   const [selectedBodega, setSelectedBodega] = useState(null);
-  const [totalAmountPaid, setTotalAmountPaid] = useState(0);  // Total pagado
+  const [totalAmountPaid, setTotalAmountPaid] = useState(0);
+  const [currentReservationId, setCurrentReservationId] = useState(null);
+  const [paymentStatus, setPaymentStatus] = useState('');
+  const [paymentDueDate, setPaymentDueDate] = useState('');
+
+  const [reservationDetails, setReservationDetails] = useState({
+    calculatedAmount: 0,
+    totalAmountPaid: 0,
+    totalPendingAmount: 0,
+    pendingDeposit: 0,
+    startDate: '',
+    endDate: '',
+    duration: 0,
+  });
 
   const handleTabChange = (event, newValue) => {
     setSelectedTab(newValue);
@@ -17,30 +30,50 @@ function MinibodegasTabs() {
 
   const handleSelectClient = (client) => {
     setSelectedClient(client);
+    setSelectedTab(1); // Avanzar a la siguiente pestaña automáticamente
   };
 
   const handleSelectBodega = (bodega) => {
     setSelectedBodega(bodega);
+    setSelectedTab(2); // Avanzar a la siguiente pestaña automáticamente
   };
 
-  const handlePaymentUpdate = (amount) => {
-    setTotalAmountPaid(amount);  // Actualizar el total pagado
+  const handlePaymentUpdate = (amount, reservationId, paymentStatus) => {
+    setTotalAmountPaid(amount);
+    setCurrentReservationId(reservationId);
+    setPaymentStatus(paymentStatus);
+  };
+
+  const handlePaymentDueDateChange = (date) => {
+    console.log("Nueva fecha límite de pago:", date);  // Verifica si se recibe correctamente
+
+    setPaymentDueDate(date);
+  };  
+
+  const handleReservationDetailsChange = (details) => {
+    setReservationDetails(details);
+    // Depuración
+    console.log('Detalles de la reservación actualizados:', details);
   };
 
   return (
     <Box sx={{ width: '100%' }}>
-      {/* Mostrar ReservationDetails siempre */}
       <Paper elevation={3} sx={{ padding: 2, marginBottom: 2 }}>
         <ReservationDetails 
           selectedClient={selectedClient} 
           selectedBodega={selectedBodega} 
-          totalAmountPaid={totalAmountPaid}  // Pasar la cantidad pagada
+          totalAmountPaid={totalAmountPaid}
+          currentReservationId={currentReservationId}
+          paymentStatus={paymentStatus}
+          
+          onPaymentDueDateChange={handlePaymentDueDateChange}
+          onReservationDetailsChange={handleReservationDetailsChange}
         />
       </Paper>
 
       <Tabs value={selectedTab} onChange={handleTabChange}>
         <Tab label="Consultar/Crear Clientes" />
-        <Tab label="Consultar MiniBodegas Disponibles" />
+        <Tab label="Consultar MiniBodegas Disponibles" disabled={!selectedClient} />
         <Tab label="Generar el Pago" disabled={!selectedClient || !selectedBodega} />
       </Tabs>
 
@@ -57,7 +90,10 @@ function MinibodegasTabs() {
         <GenerarPago 
           selectedClient={selectedClient}
           selectedBodega={selectedBodega}
-          onPaymentUpdate={handlePaymentUpdate}  // Actualizar los pagos
+          onPaymentUpdate={handlePaymentUpdate}
+          reservationId={currentReservationId}
+          paymentDueDate={paymentDueDate}
+          {...reservationDetails}  // Pasar todos los detalles de la reservación
         />
       )}
     </Box>
